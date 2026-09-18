@@ -15,5 +15,5 @@ public class Skill {
     private int id;
     @NotBlank
     private String name;
-    private String category;
+//    private String category;
 }
