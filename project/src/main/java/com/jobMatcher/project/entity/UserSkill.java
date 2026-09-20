@@ -1,24 +1,23 @@
 package com.jobMatcher.project.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
-@Entity
-@Getter
 @Setter
+@Getter
+@Entity
 @NoArgsConstructor
-public class Skill {
+public class UserSkill {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @NotBlank
-    private String name;
-//    private String category;
 
+    @ManyToOne
+    @JoinColumn(name = "skill_id")
+    private Skill skill;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }
