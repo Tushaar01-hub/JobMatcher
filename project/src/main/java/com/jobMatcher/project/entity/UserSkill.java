@@ -15,9 +15,9 @@ public class UserSkill {
     private long id;
 
     @ManyToOne
-    @JoinColumn(name = "skill_id")
+    @JoinColumn(name = "skillid",unique = true)
     private Skill skill;
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "userid",unique = true)
     private User user;
 }
