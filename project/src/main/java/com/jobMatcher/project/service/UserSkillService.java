@@ -24,7 +24,7 @@ public class UserSkillService {
 
     //    1. addSkillToUser()
     //will be returning userskillResponse
-    public User addSkillToUser(long userId,long skillId){
+    public UserSkill addSkillToUser(long userId,long skillId){
         if(userSkillRepository.existsByUserIdAndSkillId(userId,skillId)){
             throw new RuntimeException("User with that Skill exists already");
         }
@@ -34,7 +34,7 @@ public class UserSkillService {
         userSkill.setUser(user);
         userSkill.setSkill(skill);
         userSkillRepository.save(userSkill);
-        return user;
+        return userSkill;
     }
 //2. getUserSkills()
     public List<UserSkill> getUserSkills(long userId){
