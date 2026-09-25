@@ -1,5 +1,9 @@
 package com.jobMatcher.project.controller;
 
+import com.jobMatcher.project.dtos.JobRequestDTO;
+import com.jobMatcher.project.dtos.JobResponseDTO;
+import com.jobMatcher.project.dtos.JobUpdateRequestDTO;
+import com.jobMatcher.project.dtos.JobUpdatedResponseDTO;
 import com.jobMatcher.project.entity.Job;
 import com.jobMatcher.project.service.JobService;
 import org.springframework.http.HttpStatus;
@@ -18,28 +22,28 @@ public class JobController {
     }
 //    POST    createJob()        → 201 CREATED
     @PostMapping
-    public ResponseEntity<Job> createJob(@RequestBody Job job){
-        Job savedJob=jobService.createJob(job);
+    public ResponseEntity<JobResponseDTO> createJob(@RequestBody JobRequestDTO jobRequestDTO){
+        JobResponseDTO savedJob=jobService.createJob(jobRequestDTO);
         return new ResponseEntity<>(savedJob, HttpStatus.CREATED);
     }
 //    GET     getAllJobs()       → 200 OK
     @GetMapping
-    public ResponseEntity<List<Job>> getAllJob(){
-        List<Job> jobs=jobService.getAllJobs();
-        return new ResponseEntity<>(jobs,HttpStatus.OK);
+    public ResponseEntity<List<JobResponseDTO>> getAllJob(){
+        List<JobResponseDTO> jobsResponses=jobService.getAllJobs();
+        return new ResponseEntity<>(jobsResponses,HttpStatus.OK);
     }
 //    GET     getJob()           → 200 OK
     @GetMapping("/{id}")
-    public ResponseEntity<Job> getJob(@PathVariable long id){
-        Job job=jobService.getJob(id);
-        return new ResponseEntity<>(job,HttpStatus.OK);
+    public ResponseEntity<JobResponseDTO> getJob(@PathVariable long id){
+        JobResponseDTO jobResponseDTO=jobService.getJob(id);
+        return new ResponseEntity<>(jobResponseDTO,HttpStatus.OK);
     }
 //    PUT     updateJob()        → 200 OK
     @PutMapping("/{id}")
-    public ResponseEntity<Job> updateJob(@PathVariable long id,
-                                         @RequestBody Job job){
-        Job updatedjob=jobService.updateJob(id,job);
-        return new ResponseEntity<>(updatedjob,HttpStatus.OK);
+    public ResponseEntity<JobUpdatedResponseDTO> updateJob(@PathVariable long id,
+                                                         @RequestBody JobUpdateRequestDTO jobUpdateRequestDTO){
+        JobUpdatedResponseDTO updatedjobResponseDTO=jobService.updateJob(id,jobUpdateRequestDTO);
+        return new ResponseEntity<>(updatedjobResponseDTO,HttpStatus.OK);
     }
 //    DELETE  deleteJob()        → 204 NO_CONTENT
     @DeleteMapping("/{id}")
