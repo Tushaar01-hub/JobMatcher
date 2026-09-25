@@ -15,9 +15,9 @@ public class JobSkill {
     private long id;
 
     @ManyToOne
-    @JoinColumn(name = "job_id")
+    @JoinColumn(name = "jobid")
     private Job job;
     @ManyToOne
-    @JoinColumn(name = "skill_id")
+    @JoinColumn(name = "skillid")
     private Skill skill;
 }
