@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 @Setter
 @Getter
 @Entity
@@ -13,11 +12,10 @@ public class UserSkill {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
     @ManyToOne
-    @JoinColumn(name = "skillid",unique = true)
+    @JoinColumn(name = "skillid")
     private Skill skill;
     @ManyToOne
-    @JoinColumn(name = "userid",unique = true)
+    @JoinColumn(name = "userid")
     private User user;
 }

@@ -3,8 +3,10 @@ package com.jobMatcher.project.controller;
 
 import com.jobMatcher.project.dtos.UserRequestDTO;
 import com.jobMatcher.project.dtos.UserResponseDTO;
+import com.jobMatcher.project.dtos.UserUpdatedRequestDTO;
 import com.jobMatcher.project.entity.User;
 import com.jobMatcher.project.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/User")
+@RequestMapping("/users")
 public class UserController {
     UserService userService;
 
@@ -21,7 +23,7 @@ public class UserController {
     }
     //    POST    createJob()        → 201 CREATED
     @PostMapping
-    public ResponseEntity<UserResponseDTO> createUser(@RequestBody UserRequestDTO userRequestDTO){
+    public ResponseEntity<UserResponseDTO> createUser(@Valid@RequestBody UserRequestDTO userRequestDTO){
         UserResponseDTO createdUser=userService.createUser(userRequestDTO);
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
@@ -40,7 +42,7 @@ public class UserController {
     //    PUT     updateJob()        → 200 OK
     @PutMapping("/{id}")
     public ResponseEntity<UserResponseDTO> updateUser(@PathVariable long id,
-                                         @RequestBody UserRequestDTO user){
+                                                            @Valid @RequestBody UserUpdatedRequestDTO user){
         UserResponseDTO updateduser=userService.updateUser(id,user);
         return new ResponseEntity<>(updateduser,HttpStatus.OK);
     }

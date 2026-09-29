@@ -25,9 +25,8 @@ public class JobRequestDTO {
     @NotNull
     @Min(0)
     private Integer salary;
-    @Enumerated(EnumType.STRING)
-    @NotNull(message = "Role is required") //an enum can have only 1 defined values
+    @NotNull(message = "Experience is required") //an enum can have only 1 defined values
     private ExperienceLevel experienceLevel;
     @NotEmpty
-    private List<Long> skills;
+    private List<Long> skillIds;
 }

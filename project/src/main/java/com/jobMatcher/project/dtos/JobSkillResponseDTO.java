@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class JobSkillResponseDTO {
+    long jobId;
     long skillId;
     String skillName;
 //    public JobSkillResponseDTO(long skillId,String skillName){

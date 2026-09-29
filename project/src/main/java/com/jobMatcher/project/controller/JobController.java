@@ -4,8 +4,8 @@ import com.jobMatcher.project.dtos.JobRequestDTO;
 import com.jobMatcher.project.dtos.JobResponseDTO;
 import com.jobMatcher.project.dtos.JobUpdateRequestDTO;
 import com.jobMatcher.project.dtos.JobUpdatedResponseDTO;
-import com.jobMatcher.project.entity.Job;
 import com.jobMatcher.project.service.JobService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/Job")
+@RequestMapping("/jobs")
 public class JobController {
     JobService jobService;
 
@@ -22,7 +22,7 @@ public class JobController {
     }
 //    POST    createJob()        → 201 CREATED
     @PostMapping
-    public ResponseEntity<JobResponseDTO> createJob(@RequestBody JobRequestDTO jobRequestDTO){
+    public ResponseEntity<JobResponseDTO> createJob(@Valid @RequestBody JobRequestDTO jobRequestDTO){
         JobResponseDTO savedJob=jobService.createJob(jobRequestDTO);
         return new ResponseEntity<>(savedJob, HttpStatus.CREATED);
     }
@@ -41,7 +41,7 @@ public class JobController {
 //    PUT     updateJob()        → 200 OK
     @PutMapping("/{id}")
     public ResponseEntity<JobUpdatedResponseDTO> updateJob(@PathVariable long id,
-                                                         @RequestBody JobUpdateRequestDTO jobUpdateRequestDTO){
+                                                        @Valid @RequestBody JobUpdateRequestDTO jobUpdateRequestDTO){
         JobUpdatedResponseDTO updatedjobResponseDTO=jobService.updateJob(id,jobUpdateRequestDTO);
         return new ResponseEntity<>(updatedjobResponseDTO,HttpStatus.OK);
     }

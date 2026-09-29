@@ -4,6 +4,7 @@ import com.jobMatcher.project.dtos.JobRequestDTO;
 import com.jobMatcher.project.dtos.JobResponseDTO;
 import com.jobMatcher.project.dtos.JobUpdateRequestDTO;
 import com.jobMatcher.project.dtos.JobUpdatedResponseDTO;
+import com.jobMatcher.project.exception.ResourceNotFoundException;
 import com.jobMatcher.project.entity.Job;
 import com.jobMatcher.project.entity.JobSkill;
 import com.jobMatcher.project.entity.Skill;
@@ -32,11 +33,15 @@ public class JobService {
 
     public JobResponseDTO createJob(JobRequestDTO jobRequestDTO){
         Job job=modelMapper.map(jobRequestDTO, Job.class);
+//        if(jobRepository.existsByJob(job)){
+//            throw new DuplicateResourceException("Job Already Exists");
+//        }
+        List<Skill> skillList=jobRequestDTO.getSkillIds().stream().map(skillId->skillRepository.findById(skillId).orElseThrow(()->new ResourceNotFoundException("Skill Not Found"))).toList();
         Job savedJob=jobRepository.save(job);
 //        long savedJobId=savedJob.getId();
-        for(long skillId:jobRequestDTO.getSkills()){
-            Skill skill = skillRepository.findById(skillId)
-                    .orElseThrow(() -> new RuntimeException("Skill not found"));
+        for(Skill skill:skillList){
+//            Skill skill = skillRepository.findById(skillId)
+//                    .orElseThrow(() -> new ResourceNotFoundException("Skill Not Found"));
             JobSkill jobSkill=new JobSkill();
             jobSkill.setSkill(skill);
             jobSkill.setJob(savedJob);
@@ -67,7 +72,7 @@ public class JobService {
     }
 
     public JobResponseDTO getJob(long id){
-        Job job=jobRepository.findById(id).orElseThrow();
+        Job job=jobRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Job Not Found") );
         JobResponseDTO jobResponseDTO=modelMapper.map(job,JobResponseDTO.class);
         jobResponseDTO.setSkills(jobSkillRepository.findAllByJobId(id).stream().
                 map(jobSkill -> jobSkill.getSkill().getName()).toList());
@@ -76,7 +81,7 @@ public class JobService {
     }
 
     public JobUpdatedResponseDTO updateJob(long id, JobUpdateRequestDTO jobUpdateRequestDTO){
-        Job job=jobRepository.findById(id).orElseThrow();
+        Job job=jobRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Job Not Found") );
         job.setExperienceLevel(jobUpdateRequestDTO.getExperienceLevel());
         job.setSalary(jobUpdateRequestDTO.getSalary());
         job.setTitle(jobUpdateRequestDTO.getTitle());
@@ -89,13 +94,11 @@ public class JobService {
 
     }
     public void deleteJob(long id){
-        Job job=jobRepository.findById(id).orElseThrow();
+        Job job=jobRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Job Not Found") );
 
         List<JobSkill> jobSkillList=jobSkillRepository.findAllByJobId(id);
-        for (int i = 0; i < jobSkillList.size(); i++) {
-            jobSkillRepository.delete(jobSkillList.get(i));
-        }
-        jobRepository.deleteById(id);
+        jobSkillRepository.deleteAll(jobSkillList);
+        jobRepository.delete(job);
 
 
     }

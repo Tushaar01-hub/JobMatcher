@@ -1,12 +1,15 @@
 package com.jobMatcher.project.dtos;
+
 import com.jobMatcher.project.enums.Role;
 import jakarta.persistence.Column;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
-import java.util.List;
 
 @Data
-public class UserRequestDTO {
+public class UserUpdatedRequestDTO {
     @NotBlank(message = "Name can't be empty")
     private String name;
     @Email
@@ -20,6 +23,4 @@ public class UserRequestDTO {
     private String password;
     @NotNull(message = "Experience level is required")
     private Role role;
-    @NotEmpty(message = "Skills can't be empty")
-    private List<Long> skillIds;
 }
