@@ -83,6 +83,10 @@ public class MatchingService {
             matches.add(dto);
         }
 
+        matches.sort((a, b) ->
+                Double.compare(b.getMatchPercentage(), a.getMatchPercentage())
+        );
+
         return matches;
 
     }
