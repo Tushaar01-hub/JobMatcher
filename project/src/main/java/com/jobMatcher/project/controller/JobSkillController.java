@@ -1,5 +1,6 @@
 package com.jobMatcher.project.controller;
 
+import com.jobMatcher.project.dtos.JobResponseDTO;
 import com.jobMatcher.project.dtos.JobSkillResponseDTO;
 import com.jobMatcher.project.entity.JobSkill;
 import com.jobMatcher.project.service.JobSkillService;
@@ -32,4 +33,5 @@ public class JobSkillController {
         jobSkillService.removeSkillFromJob(jobId, skillId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
 }

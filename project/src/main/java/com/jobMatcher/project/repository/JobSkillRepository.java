@@ -10,5 +10,6 @@ public interface JobSkillRepository extends JpaRepository<JobSkill,Long> {
     boolean existsByJobIdAndSkillId(long jobId,long skillId);
     List<JobSkill> findAllByJobId(long jobId);
     JobSkill findByJobIdAndSkillId(long jobId,long skillId);
+    List<JobSkill> findBySkill_NameContainingIgnoreCase(String skillName);
 
 }

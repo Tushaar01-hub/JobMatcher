@@ -4,6 +4,7 @@ import com.jobMatcher.project.dtos.JobRequestDTO;
 import com.jobMatcher.project.dtos.JobResponseDTO;
 import com.jobMatcher.project.dtos.JobUpdateRequestDTO;
 import com.jobMatcher.project.dtos.JobUpdatedResponseDTO;
+import com.jobMatcher.project.enums.ExperienceLevel;
 import com.jobMatcher.project.exception.ResourceNotFoundException;
 import com.jobMatcher.project.entity.Job;
 import com.jobMatcher.project.entity.JobSkill;
@@ -11,7 +12,9 @@ import com.jobMatcher.project.entity.Skill;
 import com.jobMatcher.project.repository.JobRepository;
 import com.jobMatcher.project.repository.JobSkillRepository;
 import com.jobMatcher.project.repository.SkillRepository;
+import com.jobMatcher.project.specification.JobSpecification;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -99,7 +102,87 @@ public class JobService {
         List<JobSkill> jobSkillList=jobSkillRepository.findAllByJobId(id);
         jobSkillRepository.deleteAll(jobSkillList);
         jobRepository.delete(job);
+    }
+    public List<JobResponseDTO> searchJobByTitle(String title){
+        List<Job> jobList=jobRepository.findByTitleContainingIgnoreCase(title);
+        List<JobResponseDTO> jobResponseDTOList=new ArrayList<>();
+        for(Job job:jobList){
+            JobResponseDTO jobResponseDTO=modelMapper.map(job,JobResponseDTO.class);
+            jobResponseDTO.setSkills(job.getJobSkills().stream().map(jobSkill -> jobSkill.getSkill().getName()).toList());
+            jobResponseDTOList.add(jobResponseDTO);
 
-
+        }
+        return jobResponseDTOList;
+    }
+    public List<JobResponseDTO> searchByExperienceLevel(ExperienceLevel explvl){
+        List<Job> jobList=jobRepository.findByExperienceLevel(explvl);
+        List<JobResponseDTO> jobResponseDTOList=new ArrayList<>();
+        for(Job job:jobList){
+            JobResponseDTO jobResponseDTO=modelMapper.map(job,JobResponseDTO.class);
+            jobResponseDTO.setSkills(job.getJobSkills().stream().map(jobSkill -> jobSkill.getSkill().getName()).toList());
+            jobResponseDTOList.add(jobResponseDTO);
+        }
+        return jobResponseDTOList;
+    }
+    public List<JobResponseDTO> searchBySalary(long salary){
+        List<Job> jobList=jobRepository.findBySalaryGreaterThanEqual(salary);
+        List<JobResponseDTO> jobResponseDTOList=new ArrayList<>();
+        for(Job job:jobList){
+            JobResponseDTO jobResponseDTO=modelMapper.map(job,JobResponseDTO.class);
+            jobResponseDTO.setSkills(job.getJobSkills().stream().map(jobSkill -> jobSkill.getSkill().getName()).toList());
+            jobResponseDTOList.add(jobResponseDTO);
+        }
+        return jobResponseDTOList;
+    }
+    public List<JobResponseDTO> searchByCompany(String company){
+        List<Job> jobList=jobRepository.findByCompanyContainingIgnoreCase(company);
+        List<JobResponseDTO> jobResponseDTOList=new ArrayList<>();
+        for(Job job:jobList){
+            JobResponseDTO jobResponseDTO=modelMapper.map(job,JobResponseDTO.class);
+            jobResponseDTO.setSkills(job.getJobSkills().stream().map(jobSkill -> jobSkill.getSkill().getName()).toList());
+            jobResponseDTOList.add(jobResponseDTO);
+        }
+        return jobResponseDTOList;
+    }
+    public List<JobResponseDTO> searchBySkill(String skillname){
+        List<JobSkill> jobSkillList=jobSkillRepository.findBySkill_NameContainingIgnoreCase(skillname);
+        List<JobResponseDTO> jobResponseDTOList=new ArrayList<>();
+        for(JobSkill jobSkills:jobSkillList){
+            Job job=jobSkills.getJob();
+            JobResponseDTO jobResponseDTO=modelMapper.map(job,JobResponseDTO.class);
+            jobResponseDTO.setSkills(job.getJobSkills().stream().map(jobSkill -> jobSkill.getSkill().getName()).toList());
+            jobResponseDTOList.add(jobResponseDTO);
+        }
+        return jobResponseDTOList;
+    }
+    public List<JobResponseDTO> getJobsByFilter(String title,ExperienceLevel explvl,Long salary,String company,String skillName){
+        Specification<Job> specification=(root, query, criteriaBuilder) -> null;
+        if(title!=null){
+           specification= specification.and(JobSpecification.hasTitle(title));
+        }
+        if(explvl!=null){
+            specification=specification.and(JobSpecification.hasExpLvl(explvl));
+        }
+        if(salary!=null){
+            specification=specification.and(JobSpecification.hasMinSalary(salary));
+        }
+        if(company!=null){
+            specification=specification.and(JobSpecification.hasCompany(company));
+        }
+        if(skillName!=null){
+            specification=specification.and(JobSpecification.hasSkill(skillName));
+        }
+        List<Job> jobList=jobRepository.findAll(specification);
+        List<JobResponseDTO> jobResponseDTOList=new ArrayList<>();
+        for(Job job:jobList){
+            JobResponseDTO jobResponseDTO=modelMapper.map(job,JobResponseDTO.class);
+            List<String> skillnames=new ArrayList<>();
+            for (JobSkill jobSkill:job.getJobSkills()){
+                skillnames.add(jobSkill.getSkill().getName());
+            }
+            jobResponseDTO.setSkills(skillnames);
+            jobResponseDTOList.add(jobResponseDTO);
+        }
+        return jobResponseDTOList;
     }
 }
