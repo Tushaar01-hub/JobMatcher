@@ -7,8 +7,12 @@ import com.jobMatcher.project.entity.Skill;
 import com.jobMatcher.project.entity.User;
 import com.jobMatcher.project.exception.ResourceNotFoundException;
 import com.jobMatcher.project.repository.*;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -22,19 +26,31 @@ public class MatchingService {
     JobSkillRepository jobSkillRepository;
     UserSkillRepository userSkillRepository;
     UserRepository userRepository;
+    private final RedisTemplate<String ,Object> redisTemplate;
+    private  final ObjectMapper objectMapper;
 
-    public MatchingService(JobRepository jobRepository, JobSkillRepository jobSkillRepository, UserSkillRepository userSkillRepository, UserRepository userRepository, SkillRepository skillRepository) {
-        this.jobRepository = jobRepository;
-        this.jobSkillRepository = jobSkillRepository;
-        this.userSkillRepository = userSkillRepository;
-        this.userRepository = userRepository;
+    public MatchingService(SkillRepository skillRepository, RedisTemplate<String, Object> redisTemplate, ObjectMapper objectMapper, UserRepository userRepository, UserSkillRepository userSkillRepository, JobSkillRepository jobSkillRepository, JobRepository jobRepository) {
         this.skillRepository = skillRepository;
+        this.redisTemplate = redisTemplate;
+        this.objectMapper = objectMapper;
+        this.userRepository = userRepository;
+        this.userSkillRepository = userSkillRepository;
+        this.jobSkillRepository = jobSkillRepository;
+        this.jobRepository = jobRepository;
     }
 
     public List<JobResponseMatchDTO> getUserMatchingJob(long userId){
         // 1. Get user
         User user=userRepository.findById(userId).orElseThrow(()->new ResourceNotFoundException("User Not Found"));
+        String key="users:"+userId+":matches";
+        Object cached=redisTemplate.opsForValue().get(key);
 
+        if(cached!=null){
+//            System.out.println(cached.getClass()); to check if we r converting to right ds
+            return objectMapper.convertValue(cached,
+                    new TypeReference<List<JobResponseMatchDTO>>() {
+                    });
+        }
         // 2. Get user's skills
         List<Long> skillIdList=userSkillRepository.findAllByUserId(userId).stream()
                 .map(userSkill -> userSkill.getSkill().getId()).toList();
@@ -86,6 +102,8 @@ public class MatchingService {
         matches.sort((a, b) ->
                 Double.compare(b.getMatchPercentage(), a.getMatchPercentage())
         );
+        Duration ttl=Duration.ofMinutes(10);
+        redisTemplate.opsForValue().set(key,matches, ttl);
 
         return matches;
 
