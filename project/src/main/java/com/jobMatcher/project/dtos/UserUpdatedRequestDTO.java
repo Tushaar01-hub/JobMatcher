@@ -21,6 +21,6 @@ public class UserUpdatedRequestDTO {
             message = "Password must be 8-32 characters and contain atleast 1 uppercase, lowercase, digit, and special character"
     )
     private String password;
-    @NotNull(message = "Experience level is required")
-    private Role role;
+//    @NotNull(message = "Experience level is required")
+//    private Role role;
 }

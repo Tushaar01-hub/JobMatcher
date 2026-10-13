@@ -4,6 +4,7 @@ import com.jobMatcher.project.dtos.SkillResponseDTO;
 import com.jobMatcher.project.dtos.UserRequestDTO;
 import com.jobMatcher.project.dtos.UserResponseDTO;
 import com.jobMatcher.project.dtos.UserUpdatedRequestDTO;
+import com.jobMatcher.project.enums.Role;
 import com.jobMatcher.project.exception.DuplicateResourceException;
 import com.jobMatcher.project.exception.ResourceNotFoundException;
 import com.jobMatcher.project.entity.Skill;
@@ -13,6 +14,7 @@ import com.jobMatcher.project.repository.SkillRepository;
 import com.jobMatcher.project.repository.UserRepository;
 import com.jobMatcher.project.repository.UserSkillRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -24,20 +26,24 @@ public class UserService {
     private final ModelMapper modelMapper;
     UserSkillRepository userSkillRepository;
     SkillRepository skillRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(ModelMapper modelMapper, UserRepository userRepository, UserSkillRepository userSkillRepository, SkillRepository skillRepository) {
+    public UserService(ModelMapper modelMapper, PasswordEncoder passwordEncoder, SkillRepository skillRepository, UserSkillRepository userSkillRepository, UserRepository userRepository) {
         this.modelMapper = modelMapper;
-        this.userRepository = userRepository;
-        this.userSkillRepository = userSkillRepository;
+        this.passwordEncoder = passwordEncoder;
         this.skillRepository = skillRepository;
+        this.userSkillRepository = userSkillRepository;
+        this.userRepository = userRepository;
     }
 
     public UserResponseDTO createUser(UserRequestDTO userRequestDTO){
         User user=modelMapper.map(userRequestDTO,User.class);
+        user.setRole(Role.USER);
         if(userRepository.existsByEmail(user.getEmail())){
             throw new DuplicateResourceException("User Exists");
         }
         List<Skill> skillList=userRequestDTO.getSkillIds().stream().map(skillId->skillRepository.findById(skillId).orElseThrow(()->new ResourceNotFoundException("Skill Not Found"))).toList();
+        user.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
         User savedUser=userRepository.save(user);
         List<SkillResponseDTO> skillResponseDTOList=new ArrayList<>();
 
@@ -100,7 +106,7 @@ public class UserService {
         User u=userRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("User Not Found"));
         u.setEmail(user.getEmail());
         u.setName(user.getName());
-        u.setPassword(user.getPassword());
+        u.setPassword(passwordEncoder.encode(user.getPassword()));
 //        u.setRole(user.getRole()); will check at authorization
         User savedUSER=userRepository.save(u);
         UserResponseDTO userResponseDTO=modelMapper.map(savedUSER,UserResponseDTO.class);
