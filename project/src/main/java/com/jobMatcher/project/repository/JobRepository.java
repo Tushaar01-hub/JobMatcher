@@ -1,11 +1,12 @@
 package com.jobMatcher.project.repository;
 
 import com.jobMatcher.project.entity.Job;
-import com.jobMatcher.project.entity.JobSkill;
 import com.jobMatcher.project.enums.ExperienceLevel;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-
 import java.util.List;
 
 public interface JobRepository extends JpaRepository<Job,Long>, JpaSpecificationExecutor<Job> {
@@ -14,6 +15,7 @@ public interface JobRepository extends JpaRepository<Job,Long>, JpaSpecification
 
     List<Job> findBySalaryGreaterThanEqual(long salaryIsGreaterThan);
     List<Job> findByCompanyContainingIgnoreCase(String company);
+    Page<Job> findAll(Specification<Job> spec, Pageable pageable);
 
 
 }

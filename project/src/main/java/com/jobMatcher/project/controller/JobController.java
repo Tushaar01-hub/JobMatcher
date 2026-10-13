@@ -7,6 +7,10 @@ import com.jobMatcher.project.dtos.JobUpdatedResponseDTO;
 import com.jobMatcher.project.enums.ExperienceLevel;
 import com.jobMatcher.project.service.JobService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -84,13 +88,26 @@ public ResponseEntity<List<JobResponseDTO>> searchByCompany(@RequestParam String
     }
     //GET /jobs?title=java&experienceLevel=FRESHER&minSalary=800000&company=CloudStack&skill=Java
     @GetMapping("/filters")
-    public ResponseEntity<List<JobResponseDTO>> getJobsByFilter(@RequestParam(required = false) String title,
+    public ResponseEntity<Page<JobResponseDTO>> getJobsByFilter(@RequestParam(required = false) String title,
                                                                 @RequestParam(required = false) ExperienceLevel experienceLevel,
                                                                 @RequestParam(required = false) Long minSalary,
                                                                 @RequestParam(required = false) String company,
-                                                                @RequestParam(required = false) String skillName){
-        List<JobResponseDTO> jobResponseDTOList=jobService.getJobsByFilter(title, experienceLevel, minSalary, company, skillName);
-        return new ResponseEntity<>(jobResponseDTOList,HttpStatus.OK);
+                                                                @RequestParam(required = false) String skillName,
+                                                                @RequestParam(required = false,defaultValue = "0") int pageNum,
+                                                                @RequestParam(required = false,defaultValue = "5") int pageSize,
+                                                                @RequestParam(required = false,defaultValue = "title") String sortBy,
+                                                                @RequestParam(required = false,defaultValue = "asc") String sortDir){
+        Sort sort=null;
+        if(sortDir.equalsIgnoreCase("ASC")){
+            sort=Sort.by(sortBy).ascending();
+        }
+        else{
+            sort=Sort.by(sortBy).descending();
+        }
+        Pageable pageable= PageRequest.of(pageNum,pageSize,sort);
+        Page<JobResponseDTO> jobResponseDTOPage=jobService.getJobsByFilter(title, experienceLevel, minSalary,
+                company, skillName,pageable);
+        return new ResponseEntity<>(jobResponseDTOPage,HttpStatus.OK);
     }
 
 }

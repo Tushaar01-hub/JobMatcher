@@ -14,11 +14,17 @@ import com.jobMatcher.project.repository.JobSkillRepository;
 import com.jobMatcher.project.repository.SkillRepository;
 import com.jobMatcher.project.specification.JobSpecification;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class JobService {
@@ -155,7 +161,8 @@ public class JobService {
         }
         return jobResponseDTOList;
     }
-    public List<JobResponseDTO> getJobsByFilter(String title,ExperienceLevel explvl,Long salary,String company,String skillName){
+    public Page<JobResponseDTO> getJobsByFilter(String title, ExperienceLevel explvl, Long salary,
+                                                String company, String skillName, Pageable pageable){
         Specification<Job> specification=(root, query, criteriaBuilder) -> null;
         if(title!=null){
            specification= specification.and(JobSpecification.hasTitle(title));
@@ -172,17 +179,45 @@ public class JobService {
         if(skillName!=null){
             specification=specification.and(JobSpecification.hasSkill(skillName));
         }
-        List<Job> jobList=jobRepository.findAll(specification);
-        List<JobResponseDTO> jobResponseDTOList=new ArrayList<>();
-        for(Job job:jobList){
-            JobResponseDTO jobResponseDTO=modelMapper.map(job,JobResponseDTO.class);
-            List<String> skillnames=new ArrayList<>();
-            for (JobSkill jobSkill:job.getJobSkills()){
-                skillnames.add(jobSkill.getSkill().getName());
+//        List<Job> jobList=jobRepository.findAll(specification);
+        Page<Job> jobPage = jobRepository.findAll(specification, pageable);
+        List<Long> jobIds = jobPage.getContent()
+                .stream()
+                .map(Job::getId)
+                .toList();
+        List<JobSkill> jobSkills =
+                jobSkillRepository.findAllByJobIdIn(jobIds);
+        Map<Long, List<JobSkill>> skillsByJobId =
+                jobSkills.stream()
+                        .collect(Collectors.groupingBy(
+                                js -> js.getJob().getId()
+                        ));
+        Page<JobResponseDTO> jobResponseDTOPage = jobPage.map(job -> {
+
+//            JobResponseDTO dto = modelMapper.map(job, JobResponseDTO.class);
+
+            JobResponseDTO dto=new JobResponseDTO();
+            dto.setTitle(job.getTitle());
+            dto.setDescription(job.getDescription());
+            dto.setSalary(job.getSalary());
+            dto.setCompany(job.getCompany());
+            dto.setExperienceLevel(job.getExperienceLevel());
+            List<JobSkill> skills =
+                    skillsByJobId.getOrDefault(
+                            job.getId(),
+                            Collections.emptyList()
+                    );
+
+            List<String> skillNames = new ArrayList<>();
+
+            for (JobSkill jobSkill : skills) {
+                skillNames.add(jobSkill.getSkill().getName());
             }
-            jobResponseDTO.setSkills(skillnames);
-            jobResponseDTOList.add(jobResponseDTO);
-        }
-        return jobResponseDTOList;
+
+            dto.setSkills(skillNames);
+
+            return dto;
+        });
+        return jobResponseDTOPage;
     }
 }
