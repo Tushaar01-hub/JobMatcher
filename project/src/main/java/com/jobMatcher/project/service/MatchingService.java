@@ -44,6 +44,7 @@ public class MatchingService {
 
         if(cached!=null){
 //            System.out.println(cached.getClass()); to check if we r converting to right ds
+//            System.out.println("CACHE HIT");
             return objectMapper.convertValue(cached,
                     new TypeReference<List<JobResponseMatchDTO>>() {
                     });
@@ -119,7 +120,7 @@ public class MatchingService {
         );
         Duration ttl=Duration.ofMinutes(10);
         redisTemplate.opsForValue().set(key,matches, ttl);
-
+//        log.info("Cache MISS for key: {}", key);
         return matches;
 
     }

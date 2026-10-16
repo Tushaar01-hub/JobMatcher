@@ -138,8 +138,8 @@ public class UserService {
         newUser.setPassword(encodedPass);
         newUser.setEmail(registerRequestDTO.getEmail());
         newUser.setRole(Role.USER);
-        userRepository.save(newUser);
-        RegisterResponseDTO registerResponseDTO=modelMapper.map(newUser, RegisterResponseDTO.class);
+        User savedUser=userRepository.save(newUser);
+        RegisterResponseDTO registerResponseDTO=modelMapper.map(savedUser, RegisterResponseDTO.class);
         return registerResponseDTO;
     }
 }
