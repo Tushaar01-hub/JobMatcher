@@ -230,10 +230,6 @@ The REST APIs were tested using **Postman** for authentication, CRUD operations,
 
 ![Job Matching](docs/screenshots/job-matching.png)
 
-### Skill Management
-
-![User Skill Management](docs/screenshots/user-skills.png)
-
 > Screenshots demonstrate the API requests, responses, HTTP status codes, and key backend functionality.
 
 ---
