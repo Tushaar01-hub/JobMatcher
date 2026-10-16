@@ -13,10 +13,7 @@ import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,7 +38,7 @@ public class MatchingService {
 
     public List<JobResponseMatchDTO> getUserMatchingJob(long userId){
         // 1. Get user
-        User user=userRepository.findById(userId).orElseThrow(()->new ResourceNotFoundException("User Not Found"));
+//        User user=userRepository.findById(userId).orElseThrow(()->new ResourceNotFoundException("User Not Found"));
         String key="users:"+userId+":matches";
         Object cached=redisTemplate.opsForValue().get(key);
 
@@ -51,20 +48,38 @@ public class MatchingService {
                     new TypeReference<List<JobResponseMatchDTO>>() {
                     });
         }
+        User user=userRepository.findById(userId).orElseThrow(()->new ResourceNotFoundException("User Not Found"));
         // 2. Get user's skills
-        List<Long> skillIdList=userSkillRepository.findAllByUserId(userId).stream()
-                .map(userSkill -> userSkill.getSkill().getId()).toList();
+        Set<Long> userSkillSet=userSkillRepository.findAllByUserId(userId).stream()
+                .map(userSkill -> userSkill.getSkill().getId()).collect(Collectors.toSet());
         // 3. Get all jobs
-        Set<Long> userSkillSet = new HashSet<>(skillIdList);
+//        Set<Long> userSkillSet = new HashSet<>(skillIdList);
 
         List<Job> jobList=jobRepository.findAll();
+        if (jobList.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<Long> jobIds = jobList.stream()
+                .map(Job::getId)
+                .toList();
+        List<JobSkill> jobSkills =
+                jobSkillRepository.findAllByJobIdIn(jobIds);
+        Map<Long, List<JobSkill>> skillsByJobId =
+                jobSkills.stream()
+                        .collect(Collectors.groupingBy(
+                                js -> js.getJob().getId()
+                        ));
 
         List<JobResponseMatchDTO> matches = new ArrayList<>();
 
         for (Job job : jobList) {
 
             // get this job's skills
-            List<JobSkill> jobSkillList=jobSkillRepository.findAllByJobId(job.getId());
+            List<JobSkill> jobSkillList =
+                    skillsByJobId.getOrDefault(
+                            job.getId(),
+                            Collections.emptyList()
+                    );
 
             // compare with user's skills
             List<String> matchedSkills=new ArrayList<>();

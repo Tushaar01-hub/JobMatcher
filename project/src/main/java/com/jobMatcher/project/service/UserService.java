@@ -1,9 +1,6 @@
 package com.jobMatcher.project.service;
 
-import com.jobMatcher.project.dtos.SkillResponseDTO;
-import com.jobMatcher.project.dtos.UserRequestDTO;
-import com.jobMatcher.project.dtos.UserResponseDTO;
-import com.jobMatcher.project.dtos.UserUpdatedRequestDTO;
+import com.jobMatcher.project.dtos.*;
 import com.jobMatcher.project.enums.Role;
 import com.jobMatcher.project.exception.DuplicateResourceException;
 import com.jobMatcher.project.exception.ResourceNotFoundException;
@@ -19,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -128,5 +126,20 @@ public class UserService {
             throw new ResourceNotFoundException("User Not Found");
         }
         userRepository.deleteById(id);
+    }
+    public RegisterResponseDTO registerUser(RegisterRequestDTO registerRequestDTO){
+        Optional<User> user=userRepository.findByEmail(registerRequestDTO.getEmail());
+        if(user.isPresent()){
+            throw new DuplicateResourceException("User Already Exists");
+        }
+        User newUser=new User();
+        newUser.setName(registerRequestDTO.getName());
+        String encodedPass= passwordEncoder.encode(registerRequestDTO.getPassword());
+        newUser.setPassword(encodedPass);
+        newUser.setEmail(registerRequestDTO.getEmail());
+        newUser.setRole(Role.USER);
+        userRepository.save(newUser);
+        RegisterResponseDTO registerResponseDTO=modelMapper.map(newUser, RegisterResponseDTO.class);
+        return registerResponseDTO;
     }
 }

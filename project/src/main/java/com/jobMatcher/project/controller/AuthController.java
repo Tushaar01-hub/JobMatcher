@@ -1,9 +1,6 @@
 package com.jobMatcher.project.controller;
 
-import com.jobMatcher.project.dtos.UserLoginRequestDTO;
-import com.jobMatcher.project.dtos.UserLoginResponseDTO;
-import com.jobMatcher.project.dtos.UserRequestDTO;
-import com.jobMatcher.project.dtos.UserResponseDTO;
+import com.jobMatcher.project.dtos.*;
 import com.jobMatcher.project.security.JwtService;
 import com.jobMatcher.project.service.UserService;
 import jakarta.validation.Valid;
@@ -33,16 +30,13 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponseDTO> register(
-            @Valid @RequestBody UserRequestDTO userRequestDTO) {
+    public ResponseEntity<RegisterResponseDTO> register(
+            @Valid @RequestBody RegisterRequestDTO registerRequestDTO) {
 
-        UserResponseDTO createdUser =
-                userService.createUser(userRequestDTO);
+        RegisterResponseDTO user = userService.registerUser(registerRequestDTO);
 
-        return new ResponseEntity<>(
-                createdUser,
-                HttpStatus.CREATED
-        );
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
+
     }
 
     @PostMapping("/login")
