@@ -218,13 +218,14 @@ The REST APIs were tested using **Postman** for authentication, CRUD operations,
 
 ### Authentication
 
-![User Registration](docs/screenshots/register.png)
+![User Registration]
+(docs/screenshots/register.png)
 
 ![User Login](docs/screenshots/login.png)
 
 ### Job Filtering
 
-![Dynamic Job Filtering](docs/screenshots/job-filter.png)
+![Dynamic Job Filtering](docs/screenshots/job-filters.png)
 
 ### Skill-Based Matching
 
