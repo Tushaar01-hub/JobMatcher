@@ -217,17 +217,21 @@ Returns jobs ranked by match percentage along with matched and missing skills.
 The REST APIs were tested using **Postman** for authentication, CRUD operations, skill management, filtering, and job matching.
 
 ### Authentication
+USER REGISTRATION 
 
-![User Registration]
-(docs/screenshots/register.png)
+![User Registration](docs/screenshots/register.png)
+
+USER LOGIN
 
 ![User Login](docs/screenshots/login.png)
 
 ### Job Filtering
+DYNAMIC JOB FILTERING
 
 ![Dynamic Job Filtering](docs/screenshots/job-filters.png)
 
 ### Skill-Based Matching
+JOB MATCHING
 
 ![Job Matching](docs/screenshots/job-matching.png)
 
