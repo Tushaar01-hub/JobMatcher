@@ -51,7 +51,7 @@ const JobFilters = ({ onFilter, filters, skills }) => {
           />
 
           <div>
-            <label htmlFor="experienceLevel" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="experienceLevel" className="block text-sm font-medium text-slate-700 mb-1">
               Experience Level
             </label>
             <select
@@ -59,7 +59,7 @@ const JobFilters = ({ onFilter, filters, skills }) => {
               name="experienceLevel"
               value={localFilters.experienceLevel || ''}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white"
             >
               <option value="">All Levels</option>
               <option value="FRESHER">Fresher</option>
@@ -71,7 +71,7 @@ const JobFilters = ({ onFilter, filters, skills }) => {
           </div>
 
           <div>
-            <label htmlFor="skillName" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="skillName" className="block text-sm font-medium text-slate-700 mb-1">
               Skill
             </label>
             <select
@@ -79,7 +79,7 @@ const JobFilters = ({ onFilter, filters, skills }) => {
               name="skillName"
               value={localFilters.skillName || ''}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white"
             >
               <option value="">All Skills</option>
               {skills?.map((skill) => (

@@ -11,12 +11,15 @@ const Input = ({
   error,
   disabled = false,
   required = false,
+  className = '',
+  inputClassName = '',
+  labelClassName = '',
 }) => {
   return (
-    <div className="mb-4">
+    <div className={`space-y-2 ${className}`}>
       {label && (
-        <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">
-          {label} {required && <span className="text-red-500">*</span>}
+        <label htmlFor={id} className={`block text-sm font-medium text-slate-700 ${labelClassName}`}>
+          {label} {required && <span className="text-error text-xs ml-1">*</span>}
         </label>
       )}
       <input
@@ -28,11 +31,9 @@ const Input = ({
         placeholder={placeholder}
         disabled={disabled}
         required={required}
-        className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary ${
-          error ? 'border-red-500' : 'border-gray-300'
-        }`}
+        className={`input ${inputClassName} ${error ? 'input-error' : ''}`}
       />
-      {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
+      {error && <p className="mt-1 text-xs text-error">{error}</p>}
     </div>
   )
 }

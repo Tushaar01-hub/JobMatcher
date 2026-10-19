@@ -1,10 +1,10 @@
 import React from 'react'
 
-const LoadingSpinner = ({ size = 'medium', className = '' }) => {
+const LoadingSpinner = ({ size = 'md', className = '' }) => {
   const sizeClasses = {
-    small: 'h-4 w-4',
-    medium: 'h-8 w-8',
-    large: 'h-12 w-12',
+    sm: 'h-6 w-6',
+    md: 'h-8 w-8',
+    lg: 'h-12 w-12',
   }
 
   return (

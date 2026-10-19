@@ -13,7 +13,7 @@ const AdminDashboardPage = () => {
   const [stats, setStats] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
-  // console.log('ADMIN DASHBOARD FETCH STARTED')
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -40,75 +40,88 @@ const AdminDashboardPage = () => {
     fetchData()
   }, [addToast])
 
-  if (isLoading) return <LoadingSpinner size="large" className="py-12" />
+  if (isLoading) return <LoadingSpinner size="lg" className="py-12" />
   if (error) return <ErrorMessage message={error} className="my-8" />
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Admin Dashboard</h1>
+    <div className="space-y-8 fade-in">
+      <header>
+        <h1 className="text-h1">Admin Dashboard</h1>
+        <p className="text-body text-slate-500 mt-2">Platform performance and administrative statistics.</p>
+      </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center mb-4">
-            <Briefcase className="h-6 w-6 text-primary mr-2" />
-            <h3 className="text-lg font-medium text-gray-900">Total Jobs</h3>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="card p-6 flex items-center space-x-4">
+          <div className="p-3 bg-indigo-50 rounded-lg text-primary">
+            <Briefcase className="h-6 w-6" />
           </div>
-          <p className="text-3xl font-bold text-gray-900">{stats?.totalJobs || 0}</p>
+          <div>
+            <p className="text-small font-semibold uppercase tracking-wider">Total Jobs</p>
+            <p className="text-3xl font-bold text-slate-900">{stats?.totalJobs || 0}</p>
+          </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center mb-4">
-            <Settings className="h-6 w-6 text-primary mr-2" />
-            <h3 className="text-lg font-medium text-gray-900">Total Skills</h3>
+        <div className="card p-6 flex items-center space-x-4">
+          <div className="p-3 bg-emerald-50 rounded-lg text-emerald-600">
+            <Settings className="h-6 w-6" />
           </div>
-          <p className="text-3xl font-bold text-gray-900">{stats?.totalSkills || 0}</p>
+          <div>
+            <p className="text-small font-semibold uppercase tracking-wider">Total Skills</p>
+            <p className="text-3xl font-bold text-slate-900">{stats?.totalSkills || 0}</p>
+          </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center mb-4">
-            <Users className="h-6 w-6 text-primary mr-2" />
-            <h3 className="text-lg font-medium text-gray-900">Total Users</h3>
+        <div className="card p-6 flex items-center space-x-4">
+          <div className="p-3 bg-violet-50 rounded-lg text-violet-600">
+            <Users className="h-6 w-6" />
           </div>
-          <p className="text-3xl font-bold text-gray-900">{stats?.totalUsers || 0}</p>
+          <div>
+            <p className="text-small font-semibold uppercase tracking-wider">Total Users</p>
+            <p className="text-3xl font-bold text-slate-900">{stats?.totalUsers || 0}</p>
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-xl font-medium text-gray-900 mb-4">Quick Actions</h2>
-          <div className="space-y-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <section className="card p-6">
+          <h2 className="text-h4 mb-6">Manage Entities</h2>
+          <div className="space-y-4">
             <Link
               to="/admin/jobs"
-              className="block p-3 bg-gray-50 hover:bg-gray-100 rounded-md text-gray-700 hover:text-gray-900 transition-colors"
+              className="flex items-center justify-between p-4 bg-slate-50 rounded-lg hover:bg-indigo-50 transition-colors group"
             >
-              Manage Jobs
+              <div>
+                <p className="font-semibold text-slate-900">Manage Jobs</p>
+                <p className="text-small">Add, edit, or remove listings</p>
+              </div>
+              <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-primary transition-colors" />
             </Link>
             <Link
               to="/admin/skills"
-              className="block p-3 bg-gray-50 hover:bg-gray-100 rounded-md text-gray-700 hover:text-gray-900 transition-colors"
+              className="flex items-center justify-between p-4 bg-slate-50 rounded-lg hover:bg-indigo-50 transition-colors group"
             >
-              Manage Skills
+              <div>
+                <p className="font-semibold text-slate-900">Manage Skills</p>
+                <p className="text-small">Update global technical skill catalogue</p>
+              </div>
+              <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-primary transition-colors" />
             </Link>
           </div>
-        </div>
+        </section>
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-xl font-medium text-gray-900 mb-4">Tips</h2>
-          <ul className="space-y-2">
+        <section className="card p-6 bg-slate-900 text-white">
+          <h2 className="text-h4 mb-6 text-white">Administrative Guidance</h2>
+          <ul className="space-y-4">
             <li className="flex items-start">
-              <span className="h-2 w-2 bg-primary rounded-full mt-2 mr-2" />
-              <span className="text-gray-700">Regularly review job listings</span>
+              <span className="h-6 w-6 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold mr-3 mt-0.5 text-indigo-400">1</span>
+              <p className="text-sm text-slate-300">Adding a diverse set of skills improves the precision of the matching algorithm for all users.</p>
             </li>
             <li className="flex items-start">
-              <span className="h-2 w-2 bg-primary rounded-full mt-2 mr-2" />
-              <span className="text-gray-700">Keep the skill catalogue up-to-date</span>
-            </li>
-            <li className="flex items-start">
-              <span className="h-2 w-2 bg-primary rounded-full mt-2 mr-2" />
-              <span className="text-gray-700">Monitor user activity and engagement</span>
+              <span className="h-6 w-6 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold mr-3 mt-0.5 text-indigo-400">2</span>
+              <p className="text-sm text-slate-300">Ensure job listings specify appropriate experience levels and realistic salary bands.</p>
             </li>
           </ul>
-        </div>
+        </section>
       </div>
     </div>
   )

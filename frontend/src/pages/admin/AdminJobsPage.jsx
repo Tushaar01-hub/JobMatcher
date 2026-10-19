@@ -6,6 +6,7 @@ import ErrorMessage from '../../components/common/ErrorMessage'
 import EmptyState from '../../components/common/EmptyState'
 import Button from '../../components/common/Button'
 import Input from '../../components/common/Input'
+import Modal from '../../components/common/Modal'
 import jobApi from '../../api/jobApi'
 import skillApi from '../../api/skillApi'
 
@@ -111,136 +112,143 @@ const AdminJobsPage = () => {
     }
   }
 
-  if (isLoading) return <LoadingSpinner size="large" className="py-12" />
+  if (isLoading) return <LoadingSpinner size="lg" className="py-12" />
   if (error) return <ErrorMessage message={error} className="my-8" />
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Manage Jobs</h1>
+    <div className="space-y-8 fade-in">
+      <header className="flex justify-between items-center">
+        <div>
+          <h1 className="text-h1">Manage Jobs</h1>
+          <p className="text-body text-slate-500 mt-2">Create and manage your job listings.</p>
+        </div>
         <Button onClick={() => handleOpenModal()}>
-          <Plus className="h-4 w-4 mr-1" />
+          <Plus className="h-4 w-4 mr-2" />
           Add Job
         </Button>
-      </div>
+      </header>
 
       {jobs.length > 0 ? (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Salary</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Level</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {jobs.map((job) => (
-                <tr key={job.id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{job.title}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{job.company}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${job.salary?.toLocaleString()}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{job.experienceLevel}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                    <button onClick={() => handleOpenModal(job)} className="text-indigo-600 hover:text-indigo-900">
-                      <Edit className="h-4 w-4" />
-                    </button>
-                    <button onClick={() => handleDelete(job.id)} className="text-red-600 hover:text-red-900">
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </td>
+        <div className="card overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-slate-200">
+              <thead className="bg-slate-50">
+                <tr>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Title</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Company</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Salary</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Level</th>
+                  <th className="px-6 py-4 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="bg-white divide-y divide-slate-200">
+                {jobs.map((job) => (
+                  <tr key={job.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">{job.title}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">{job.company}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">${job.salary?.toLocaleString()}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">{job.experienceLevel}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
+                      <button onClick={() => handleOpenModal(job)} className="text-indigo-600 hover:text-indigo-900">
+                        <Edit className="h-4 w-4" />
+                      </button>
+                      <button onClick={() => handleDelete(job.id)} className="text-rose-600 hover:text-rose-900">
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       ) : (
         <EmptyState title="No jobs found" message="Create your first job listing to get started." />
       )}
 
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl font-bold mb-4">{currentJob ? 'Edit Job' : 'Create Job'}</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <Input
-                label="Title"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                required
-              />
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description (10-300 chars)</label>
-                <textarea
-                  className="w-full px-3 py-2 border rounded-md"
-                  rows="3"
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  required
-                />
-              </div>
-              <Input
-                label="Company"
-                value={formData.company}
-                onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                required
-              />
-              <Input
-                label="Salary"
-                type="number"
-                value={formData.salary}
-                onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
-                required
-              />
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Experience Level</label>
-                <select
-                  className="w-full px-3 py-2 border rounded-md"
-                  value={formData.experienceLevel}
-                  onChange={(e) => setFormData({ ...formData, experienceLevel: e.target.value })}
-                >
-                  <option value="FRESHER">Fresher</option>
-                  <option value="ZERO_TO_ONE">0-1 years</option>
-                  <option value="TWO_TO_FIVE">2-5 years</option>
-                  <option value="FIVE_TO_TEN">5-10 years</option>
-                  <option value="TEN_PLUS">10+ years</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Required Skills</label>
-                <div className="max-h-32 overflow-y-auto border p-2 rounded-md space-y-1">
-                  {skills.map((skill) => (
-                    <label key={skill.id} className="flex items-center space-x-2 text-sm">
-                      <input
-                        type="checkbox"
-                        checked={formData.skillIds.includes(skill.id)}
-                        onChange={(e) => {
-                          const id = skill.id
-                          setFormData({
-                            ...formData,
-                            skillIds: e.target.checked
-                              ? [...formData.skillIds, id]
-                              : formData.skillIds.filter((sId) => sId !== id),
-                          })
-                        }}
-                      />
-                      <span>{skill.name}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-              <div className="flex justify-end space-x-2 pt-4">
-                <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>
-                  Cancel
-                </Button>
-                <Button type="submit">Save</Button>
-              </div>
-            </form>
+      <Modal
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        title={currentJob ? 'Edit Job' : 'Create Job'}
+        description="Enter the details of the job listing below."
+        size="lg"
+      >
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <Input
+            label="Title"
+            value={formData.title}
+            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+            required
+          />
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Description (10-300 chars)</label>
+            <textarea
+              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              rows="3"
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              required
+            />
           </div>
-        </div>
-      )}
+          <Input
+            label="Company"
+            value={formData.company}
+            onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+            required
+          />
+          <Input
+            label="Salary"
+            type="number"
+            value={formData.salary}
+            onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
+            required
+          />
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Experience Level</label>
+            <select
+              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white"
+              value={formData.experienceLevel}
+              onChange={(e) => setFormData({ ...formData, experienceLevel: e.target.value })}
+            >
+              <option value="FRESHER">Fresher</option>
+              <option value="ZERO_TO_ONE">0-1 years</option>
+              <option value="TWO_TO_FIVE">2-5 years</option>
+              <option value="FIVE_TO_TEN">5-10 years</option>
+              <option value="TEN_PLUS">10+ years</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">Required Skills</label>
+            <div className="max-h-40 overflow-y-auto border border-slate-300 p-3 rounded-lg space-y-2">
+              {skills.map((skill) => (
+                <label key={skill.id} className="flex items-center space-x-2 text-sm cursor-pointer hover:bg-slate-50 p-1 rounded">
+                  <input
+                    type="checkbox"
+                    className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                    checked={formData.skillIds.includes(skill.id)}
+                    onChange={(e) => {
+                      const id = skill.id
+                      setFormData({
+                        ...formData,
+                        skillIds: e.target.checked
+                          ? [...formData.skillIds, id]
+                          : formData.skillIds.filter((sId) => sId !== id),
+                      })
+                    }}
+                  />
+                  <span>{skill.name}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+          <div className="flex justify-end space-x-3 pt-6">
+            <Button type="button" variant="secondary" onClick={() => setIsModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button type="submit">Save</Button>
+          </div>
+        </form>
+      </Modal>
     </div>
   )
 }

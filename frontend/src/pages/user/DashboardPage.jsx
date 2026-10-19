@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../context/ToastContext'
-import { Briefcase, Users, Search, Bookmark, ArrowRight } from 'lucide-react'
+import { Briefcase, Users, Search, Bookmark, ArrowRight, Zap, Target } from 'lucide-react'
 import LoadingSpinner from '../../components/common/LoadingSpinner'
 import ErrorMessage from '../../components/common/ErrorMessage'
 import jobApi from '../../api/jobApi'
 import matchApi from '../../api/matchApi'
 import userApi from '../../api/userApi'
+import MatchCard from '../../components/jobs/MatchCard'
 
 const DashboardPage = () => {
   const { user } = useAuth()
@@ -45,124 +46,112 @@ const DashboardPage = () => {
     fetchData()
   }, [user.userId, addToast])
 
-  if (isLoading) return <LoadingSpinner size="large" className="py-12" />
+  if (isLoading) return <LoadingSpinner size="lg" className="py-12" />
   if (error) return <ErrorMessage message={error} className="my-8" />
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Dashboard</h1>
+    <div className="space-y-8 fade-in">
+      <header>
+        <h1 className="text-h1">Dashboard</h1>
+        <p className="text-body text-slate-500 mt-2">Welcome back, {user?.email.split('@')[0]}. Here is your overview.</p>
+      </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center mb-4">
-            <Briefcase className="h-6 w-6 text-primary mr-2" />
-            <h3 className="text-lg font-medium text-gray-900">Total Jobs</h3>
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="card p-6 flex items-center space-x-4">
+          <div className="p-3 bg-indigo-50 rounded-lg text-primary">
+            <Briefcase className="h-6 w-6" />
           </div>
-          <p className="text-3xl font-bold text-gray-900">{stats?.totalJobs || 0}</p>
+          <div>
+            <p className="text-small font-semibold uppercase tracking-wider">Total Jobs</p>
+            <p className="text-3xl font-bold text-slate-900">{stats?.totalJobs || 0}</p>
+          </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center mb-4">
-            <Users className="h-6 w-6 text-primary mr-2" />
-            <h3 className="text-lg font-medium text-gray-900">Your Skills</h3>
+        <div className="card p-6 flex items-center space-x-4">
+          <div className="p-3 bg-emerald-50 rounded-lg text-emerald-600">
+            <Users className="h-6 w-6" />
           </div>
-          <p className="text-3xl font-bold text-gray-900">{stats?.totalSkills || 0}</p>
+          <div>
+            <p className="text-small font-semibold uppercase tracking-wider">Your Skills</p>
+            <p className="text-3xl font-bold text-slate-900">{stats?.totalSkills || 0}</p>
+          </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center mb-4">
-            <Search className="h-6 w-6 text-primary mr-2" />
-            <h3 className="text-lg font-medium text-gray-900">Top Match</h3>
+        <div className="card p-6 flex items-center space-x-4">
+          <div className="p-3 bg-violet-50 rounded-lg text-violet-600">
+            <Target className="h-6 w-6" />
           </div>
-          <p className="text-3xl font-bold text-gray-900">{stats?.topMatchPercentage.toFixed(0) || 0}%</p>
+          <div>
+            <p className="text-small font-semibold uppercase tracking-wider">Top Match</p>
+            <p className="text-3xl font-bold text-slate-900">{stats?.topMatchPercentage.toFixed(0) || 0}%</p>
+          </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-medium text-gray-900">Top Job Matches</h2>
+      {/* Top Matches Section */}
+      <section>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-h3">Top Job Matches</h2>
           <Link
             to="/matches"
-            className="text-sm font-medium text-primary hover:text-primary-hover flex items-center"
+            className="text-sm font-semibold text-primary hover:text-indigo-700 flex items-center transition-colors"
           >
-            View All
+            View All Matches
             <ArrowRight className="h-4 w-4 ml-1" />
           </Link>
         </div>
 
         {topMatches.length > 0 ? (
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {topMatches.map((match) => (
-              <div key={match.jobId} className="border-b border-gray-200 pb-4 last:border-b-0">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900">
-                      <Link to={`/jobs/${match.jobId}`} className="hover:text-primary">
-                        {match.title}
-                      </Link>
-                    </h3>
-                    <p className="text-sm text-gray-500">{match.company}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-lg font-bold text-gray-900">
-                      {match.matchPercentage.toFixed(0)}%
-                    </p>
-                    <p className="text-sm text-gray-500">Match</p>
-                  </div>
-                </div>
-              </div>
+              <MatchCard key={match.jobId} match={match} />
             ))}
           </div>
         ) : (
-          <div className="text-center py-8">
-            <Bookmark className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-            <p className="text-gray-500">No matches found. Add more skills to see recommendations.</p>
+          <div className="card p-12 text-center">
+            <Bookmark className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+            <h3 className="text-h4 mb-2">No matches yet</h3>
+            <p className="text-body text-slate-500 max-w-sm mx-auto">Add more skills to your profile to see tailored job recommendations.</p>
           </div>
         )}
-      </div>
+      </section>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-xl font-medium text-gray-900 mb-4">Quick Actions</h2>
-          <div className="space-y-3">
-            <Link
-              to="/jobs"
-              className="block p-3 bg-gray-50 hover:bg-gray-100 rounded-md text-gray-700 hover:text-gray-900 transition-colors"
-            >
-              Browse Jobs
+      {/* Quick Actions & Tips */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <section className="card p-6">
+          <h2 className="text-h4 mb-6">Quick Actions</h2>
+          <div className="space-y-4">
+            <Link to="/jobs" className="flex items-center p-4 bg-slate-50 rounded-lg hover:bg-indigo-50 transition-colors group">
+              <Search className="h-5 w-5 text-slate-500 group-hover:text-primary mr-4" />
+              <div>
+                <p className="font-semibold text-slate-900">Browse Jobs</p>
+                <p className="text-small">Explore all available opportunities</p>
+              </div>
             </Link>
-            <Link
-              to="/skills"
-              className="block p-3 bg-gray-50 hover:bg-gray-100 rounded-md text-gray-700 hover:text-gray-900 transition-colors"
-            >
-              Manage Skills
-            </Link>
-            <Link
-              to="/matches"
-              className="block p-3 bg-gray-50 hover:bg-gray-100 rounded-md text-gray-700 hover:text-gray-900 transition-colors"
-            >
-              View Matches
+            <Link to="/skills" className="flex items-center p-4 bg-slate-50 rounded-lg hover:bg-indigo-50 transition-colors group">
+              <Zap className="h-5 w-5 text-slate-500 group-hover:text-primary mr-4" />
+              <div>
+                <p className="font-semibold text-slate-900">Manage Skills</p>
+                <p className="text-small">Update your technical profile</p>
+              </div>
             </Link>
           </div>
-        </div>
+        </section>
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-xl font-medium text-gray-900 mb-4">Tips</h2>
-          <ul className="space-y-2">
+        <section className="bg-indigo-900 p-6 rounded-xl shadow-sm text-white">
+          <h2 className="text-xl font-bold mb-6 text-white">Platform Tips</h2>
+          <ul className="space-y-4">
             <li className="flex items-start">
-              <span className="h-2 w-2 bg-primary rounded-full mt-2 mr-2" />
-              <span className="text-gray-700">Add more skills to improve your matches</span>
+              <span className="h-6 w-6 rounded-full bg-indigo-700 flex items-center justify-center text-xs font-bold mr-3 mt-0.5 text-indigo-400">1</span>
+              <p className="text-sm text-indigo-50 font-medium">The more skills you add, the more accurate our matching algorithm becomes.</p>
             </li>
             <li className="flex items-start">
-              <span className="h-2 w-2 bg-primary rounded-full mt-2 mr-2" />
-              <span className="text-gray-700">Check your profile for completeness</span>
-            </li>
-            <li className="flex items-start">
-              <span className="h-2 w-2 bg-primary rounded-full mt-2 mr-2" />
-              <span className="text-gray-700">Regularly review your matches</span>
+              <span className="h-6 w-6 rounded-full bg-indigo-700 flex items-center justify-center text-xs font-bold mr-3 mt-0.5 text-indigo-400">2</span>
+              <p className="text-sm text-indigo-50 font-medium">Regularly check for new job postings to stay ahead of the crowd.</p>
             </li>
           </ul>
-        </div>
+        </section>
       </div>
     </div>
   )

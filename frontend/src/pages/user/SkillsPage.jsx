@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../context/ToastContext'
-import { Plus, Trash2, Search } from 'lucide-react'
+import { Plus, Trash2, Search, ArrowRight, Zap } from 'lucide-react'
 import SkillBadge from '../../components/jobs/SkillBadge'
 import LoadingSpinner from '../../components/common/LoadingSpinner'
 import ErrorMessage from '../../components/common/ErrorMessage'
@@ -33,7 +33,7 @@ const SkillsPage = () => {
         setAllSkills(allSkillsResponse.data)
       } catch (err) {
         setError(err.response?.data || 'Failed to load skills')
-        addToast(err.response?.data || 'Failed to load skills', 'error')
+        addToast('Failed to load skills', 'error')
       } finally {
         setIsLoading(false)
       }
@@ -49,69 +49,50 @@ const SkillsPage = () => {
   const handleRemoveSkill = async (skillId) => {
     try {
       await userApi.removeSkillFromUser(user.userId, skillId)
-
-      setUserSkills(
-          userSkills.filter((skill) => skill.skillId !== skillId)
-      )
-
+      setUserSkills(userSkills.filter((skill) => skill.skillId !== skillId))
       addToast('Skill removed successfully', 'success')
     } catch (err) {
-      addToast(
-          err.response?.data || 'Failed to remove skill',
-          'error'
-      )
+      addToast(err.response?.data || 'Failed to remove skill', 'error')
     }
   }
 
   const handleAddSkill = async (skillId) => {
     try {
       await userApi.addSkillToUser(user.userId, skillId)
-
       const newSkill = allSkills.find((skill) => skill.id === skillId)
-
-      setUserSkills([
-        ...userSkills,
-        {
-          userId: user.userId,
-          skillId: newSkill.id,
-          skillName: newSkill.name,
-        },
-      ])
-
+      setUserSkills([...userSkills, {
+        userId: user.userId,
+        skillId: newSkill.id,
+        skillName: newSkill.name,
+      }])
       addToast('Skill added successfully', 'success')
     } catch (err) {
-      addToast(
-          err.response?.data || 'Failed to add skill',
-          'error'
-      )
+      addToast(err.response?.data || 'Failed to add skill', 'error')
     }
   }
 
-  if (isLoading) return <LoadingSpinner size="large" className="py-12" />
+  if (isLoading) return <LoadingSpinner size="lg" className="py-12" />
   if (error) return <ErrorMessage message={error} className="my-8" />
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Your Skills</h1>
+    <div className="space-y-8 fade-in">
+      <header>
+        <h1 className="text-h1">Your Skills</h1>
+        <p className="text-body text-slate-500 mt-2">Manage your technical profile to improve your job matches.</p>
+      </header>
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-medium text-gray-900">My Skills</h2>
-          <div className="flex items-center">
-            <Input
-              type="text"
-              id="search"
-              name="search"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search skills"
-              className="w-64"
-            />
-          </div>
+      <div className="card p-6">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-h3">Your Current Skills</h2>
+          {userSkills.length > 0 && (
+            <span className="text-sm font-medium text-slate-500">
+              {userSkills.length} {userSkills.length === 1 ? 'skill' : 'skills'}
+            </span>
+          )}
         </div>
 
         {userSkills.length > 0 ? (
-          <div className="flex flex-wrap gap-2 mb-6">
+          <div className="flex flex-wrap gap-3">
             {userSkills.map((skill) => (
               <SkillBadge
                 key={skill.skillId}
@@ -122,49 +103,73 @@ const SkillsPage = () => {
           </div>
         ) : (
           <EmptyState
-            title="No skills added"
-            message="Add skills to improve your job matches"
-            icon={Search}
+            title="No skills added yet"
+            message="Adding skills helps our matching engine find the best opportunities for you."
+            icon={Zap}
           />
         )}
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-medium text-gray-900">All Skills</h2>
-          <Button variant="outline" size="small">
-            <Plus className="h-4 w-4 mr-1" />
-            Add Skill
-          </Button>
+      <div className="card p-6">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-h3">Add New Skills</h2>
+          <div className="w-64">
+            <Input
+              type="text"
+              placeholder="Search skills..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              icon={<Search className="h-4 w-4 text-slate-400" />}
+            />
+          </div>
         </div>
 
         {filteredSkills.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {filteredSkills.map((skill) => (
               <div
                 key={skill.id}
-                className="flex items-center justify-between p-2 bg-gray-50 rounded-md hover:bg-gray-100 transition-colors"
+                className={`flex items-center justify-between p-3 rounded-lg transition-colors ${
+                  userSkills.some(s => s.skillId === skill.id)
+                    ? 'bg-slate-100 text-slate-500'
+                    : 'bg-slate-50 hover:bg-slate-100'
+                }`}
               >
-                <span className="text-sm text-gray-700">{skill.name}</span>
-                <Button
-                  type="button"
-                  onClick={() => handleAddSkill(skill.id)}
-                  variant="outline"
-                  size="small"
-                  className="ml-2"
-                >
-                  <Plus className="h-3 w-3" />
-                </Button>
+                <span className="text-sm font-medium">{skill.name}</span>
+                {userSkills.some(s => s.skillId === skill.id) ? (
+                  <span className="text-xs font-medium text-slate-400">Added</span>
+                ) : (
+                  <Button
+                    onClick={() => handleAddSkill(skill.id)}
+                    variant="ghost"
+                    size="sm"
+                    className="text-primary hover:text-indigo-700"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                )}
               </div>
             ))}
           </div>
         ) : (
           <EmptyState
             title="No skills found"
-            message="Try searching for a specific skill"
+            message="Try searching for a different skill or check back later."
             icon={Search}
           />
         )}
+      </div>
+
+      <div className="card p-6 bg-indigo-50 border border-indigo-200">
+        <div className="flex items-center">
+          <Zap className="h-6 w-6 text-indigo-600 mr-3" />
+          <div>
+            <h3 className="text-h4 mb-1">Why Skills Matter</h3>
+            <p className="text-body text-slate-600">
+              The more skills you add, the more accurate our matching algorithm becomes. Each skill you add helps us find roles that are a better fit for your technical background.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   )

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../context/ToastContext'
-import { Briefcase, DollarSign, Users, Calendar, ArrowLeft, Bookmark } from 'lucide-react'
+import { Briefcase, DollarSign, Users, ArrowLeft, Bookmark, CheckCircle, XCircle } from 'lucide-react'
 import LoadingSpinner from '../../components/common/LoadingSpinner'
 import ErrorMessage from '../../components/common/ErrorMessage'
 import Button from '../../components/common/Button'
@@ -34,87 +34,87 @@ const JobDetailsPage = () => {
     fetchJob()
   }, [id, addToast])
 
-  if (isLoading) return <LoadingSpinner size="large" className="py-12" />
+  if (isLoading) return <LoadingSpinner size="lg" className="py-12" />
   if (error) return <ErrorMessage message={error} className="my-8" />
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center mb-6">
+    <div className="space-y-8 fade-in">
+      <div className="flex items-center">
         <Button
           onClick={() => navigate(-1)}
-          variant="outline"
-          size="small"
+          variant="ghost"
+          size="sm"
           className="mr-4"
         >
           <ArrowLeft className="h-4 w-4 mr-1" />
           Back
         </Button>
-        <h1 className="text-2xl font-bold text-gray-900">{job?.title}</h1>
+        <h1 className="text-h1">{job?.title}</h1>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="md:col-span-2 space-y-6">
-            <div>
-              <h2 className="text-xl font-medium text-gray-900 mb-2">Job Description</h2>
-              <p className="text-gray-700 whitespace-pre-line">{job?.description}</p>
-            </div>
+      <div className="card p-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-8">
+            <section>
+              <h2 className="text-h3 mb-4">Job Description</h2>
+              <div className="prose max-w-none">
+                <p className="text-body text-slate-700 whitespace-pre-line">{job?.description}</p>
+              </div>
+            </section>
 
-            <div>
-              <h2 className="text-xl font-medium text-gray-900 mb-2">Required Skills</h2>
+            <section>
+              <h2 className="text-h3 mb-4">Required Skills</h2>
               <div className="flex flex-wrap gap-2">
                 {job?.skills?.map((skill, index) => (
                   <span
                     key={index}
-                    className="px-3 py-1 bg-gray-100 text-sm rounded-full text-gray-800"
+                    className="px-3 py-1.5 bg-slate-100 text-sm rounded-full text-slate-800"
                   >
                     {skill}
                   </span>
                 ))}
               </div>
-            </div>
+            </section>
           </div>
 
           <div className="space-y-6">
-            <div className="bg-gray-50 rounded-lg p-4">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Job Details</h3>
+            <div className="card p-6 bg-slate-50">
+              <h3 className="text-h4 mb-4">Job Details</h3>
               <div className="space-y-4">
                 <div className="flex items-center">
-                  <Briefcase className="h-5 w-5 text-gray-400 mr-2" />
+                  <Briefcase className="h-5 w-5 text-slate-400 mr-3" />
                   <div>
-                    <p className="text-sm text-gray-500">Company</p>
-                    <p className="text-sm font-medium text-gray-900">{job?.company}</p>
+                    <p className="text-small text-slate-500">Company</p>
+                    <p className="text-body font-medium text-slate-900">{job?.company}</p>
                   </div>
                 </div>
 
                 <div className="flex items-center">
-                  <DollarSign className="h-5 w-5 text-gray-400 mr-2" />
+                  <DollarSign className="h-5 w-5 text-slate-400 mr-3" />
                   <div>
-                    <p className="text-sm text-gray-500">Salary</p>
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-small text-slate-500">Salary</p>
+                    <p className="text-body font-medium text-slate-900">
                       {job?.salary?.toLocaleString()}
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center">
-                  <Users className="h-5 w-5 text-gray-400 mr-2" />
+                  <Users className="h-5 w-5 text-slate-400 mr-3" />
                   <div>
-                    <p className="text-sm text-gray-500">Experience Level</p>
-                    <p className="text-sm font-medium text-gray-900">{job?.experienceLevel}</p>
+                    <p className="text-small text-slate-500">Experience Level</p>
+                    <p className="text-body font-medium text-slate-900">{job?.experienceLevel}</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="flex space-x-2">
-              <Link to="/matches" className="w-full">
-                <Button variant="primary" size="large" className="w-full">
-                  <Bookmark className="h-4 w-4 mr-1" />
-                  View Matches
-                </Button>
-              </Link>
-            </div>
+            <Link to="/matches" className="block">
+              <Button variant="primary" size="lg" className="w-full">
+                <Bookmark className="h-4 w-4 mr-2" />
+                View Your Matches
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

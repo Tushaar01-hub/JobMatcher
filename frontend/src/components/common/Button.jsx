@@ -7,27 +7,30 @@ const Button = ({
   disabled = false,
   className = '',
   variant = 'primary',
-  size = 'medium',
+  size = 'md',
+  fullWidth = false,
 }) => {
-  const baseClasses = 'rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2'
+  const baseClasses = 'btn rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2'
   const variantClasses = {
-    primary: 'bg-primary text-white hover:bg-primary-hover',
-    secondary: 'bg-gray-100 text-gray-800 hover:bg-gray-200',
-    danger: 'bg-red-500 text-white hover:bg-red-600',
-    outline: 'border border-primary text-primary hover:bg-primary/10',
+    primary: 'btn-primary',
+    secondary: 'btn-secondary',
+    ghost: 'btn-ghost',
+    danger: 'bg-error text-white hover:bg-error-hover',
+    success: 'bg-success text-white hover:bg-success-hover',
   }
   const sizeClasses = {
-    small: 'px-3 py-1.5 text-sm',
-    medium: 'px-4 py-2 text-base',
-    large: 'px-6 py-3 text-lg',
+    sm: 'btn-sm px-3 py-1.5 text-sm',
+    md: 'btn-md px-4 py-2 text-base',
+    lg: 'btn-lg px-6 py-3 text-lg',
   }
+  const fullWidthClasses = fullWidth ? 'w-full' : ''
 
   return (
     <button
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
+      className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${fullWidthClasses} ${className}`}
     >
       {children}
     </button>

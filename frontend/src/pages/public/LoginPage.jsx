@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../context/ToastContext'
-import { Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff, Briefcase, ArrowLeft } from 'lucide-react'
 import Input from '../../components/common/Input'
 import Button from '../../components/common/Button'
 import authApi from '../../api/authApi'
@@ -45,8 +45,14 @@ const LoginPage = () => {
       <div className="max-w-md w-full px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white rounded-lg shadow-lg p-8">
           <div className="text-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Welcome Back</h1>
-            <p className="text-gray-600">Sign in to your account</p>
+            <div className="flex items-center justify-center mb-2">
+              <Link to="/" className="flex items-center">
+                <Briefcase className="h-8 w-8 text-primary mr-2" />
+                <span className="text-xl font-bold text-slate-900">JobMatcher</span>
+              </Link>
+            </div>
+            <h1 className="text-2xl font-bold text-slate-900 mb-2">Welcome Back</h1>
+            <p className="text-slate-600">Sign in to your account</p>
           </div>
 
           {error && (
@@ -135,11 +141,18 @@ const LoginPage = () => {
             </Button>
           </form>
 
-          <div className="mt-6 text-center text-sm">
-            <span className="text-gray-600">Don't have an account? </span>
-            <Link to="/register" className="text-primary font-medium hover:underline">
-              Sign up
-            </Link>
+          <div className="mt-6 text-center text-sm space-y-2">
+            <div>
+              <span className="text-gray-600">Don't have an account? </span>
+              <Link to="/register" className="text-primary font-medium hover:underline">
+                Sign up
+              </Link>
+            </div>
+            <div>
+              <Link to="/" className="text-slate-500 hover:text-slate-700 text-xs flex items-center justify-center">
+                <ArrowLeft className="h-3 w-3 mr-1" /> Back to Home
+              </Link>
+            </div>
           </div>
         </div>
       </div>

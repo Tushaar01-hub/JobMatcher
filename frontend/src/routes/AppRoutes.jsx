@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext'
 
 // Layouts
 import MainLayout from '../layouts/MainLayout'
+import AdminLayout from '../layouts/AdminLayout'
 
 // Public Pages
 import LandingPage from '../pages/public/LandingPage'
@@ -107,32 +108,13 @@ const AppRoutes = () => {
             </ProtectedRoute>
           )}
         />
+      </Route>
 
-        {/* Admin Routes */}
-        <Route
-          path="/admin"
-          element={(
-            <AdminRoute>
-              <AdminDashboardPage />
-            </AdminRoute>
-          )}
-        />
-        <Route
-          path="/admin/jobs"
-          element={(
-            <AdminRoute>
-              <AdminJobsPage />
-            </AdminRoute>
-          )}
-        />
-        <Route
-          path="/admin/skills"
-          element={(
-            <AdminRoute>
-              <AdminSkillsPage />
-            </AdminRoute>
-          )}
-        />
+      {/* Admin Routes */}
+      <Route element={<AdminRoute><AdminLayout /></AdminRoute>}>
+        <Route path="/admin" element={<AdminDashboardPage />} />
+        <Route path="/admin/jobs" element={<AdminJobsPage />} />
+        <Route path="/admin/skills" element={<AdminSkillsPage />} />
       </Route>
 
       {/* Catch-all route */}
