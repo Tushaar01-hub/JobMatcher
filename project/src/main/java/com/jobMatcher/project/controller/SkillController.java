@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/skills")
+@RequestMapping()
 public class SkillController {
     SkillService skillService;
 
@@ -21,32 +21,32 @@ public class SkillController {
     }
 
 //    POST   /skills
-    @PostMapping
+    @PostMapping("/admin/skills")
     public ResponseEntity<SkillResponseDTO> createSkills(@Valid @RequestBody SkillRequestDTO skillRequestDTO){
         SkillResponseDTO skillResponseDto=skillService.createSkill(skillRequestDTO);
         return new ResponseEntity<>(skillResponseDto,HttpStatus.CREATED);
     }
 //    GET    /skills
-    @GetMapping
+    @GetMapping("/skills")
     public ResponseEntity<List<SkillResponseDTO>> getAllSkills(){
         List<SkillResponseDTO> skillResponseDTOList=skillService.getAllSkills();
         return new ResponseEntity<>(skillResponseDTOList,HttpStatus.OK);
     }
 //    GET    /skills/{id}
-    @GetMapping("/{id}")
+    @GetMapping("/skills/{id}")
     public ResponseEntity<SkillResponseDTO> getSkillById(@PathVariable long id){
         SkillResponseDTO skillResponseDTO=skillService.getSkillById(id);
         return new ResponseEntity<>(skillResponseDTO,HttpStatus.OK);
     }
 //    PUT    /skills/{id}
-    @PutMapping("/{id}")
+    @PutMapping("/admin/skills/{id}")
     public ResponseEntity<SkillResponseDTO> updateSkill(@PathVariable long id,
                                              @Valid @RequestBody SkillRequestDTO skillRequestDTO){
         SkillResponseDTO skillResponseDTO=skillService.updateSkill(id,skillRequestDTO);
         return new ResponseEntity<>(skillResponseDTO,HttpStatus.OK);
     }
 //    DELETE /skills/{id}
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/admin/skills/{id}")
     public ResponseEntity<String> deleteSkill(@PathVariable long id){
         skillService.deleteSkill(id);
         return new ResponseEntity<>("Deleted Successfully",HttpStatus.NO_CONTENT);

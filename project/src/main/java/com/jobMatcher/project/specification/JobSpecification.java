@@ -22,10 +22,10 @@ public class JobSpecification {
             );
         }));
     }
-    public static Specification<Job> hasMinSalary(Long minSalary){
+    public static Specification<Job> hasMinSalary(Long salary){
         return (((root, query, criteriaBuilder) -> {
             return criteriaBuilder.greaterThanOrEqualTo(
-                    root.get("salary"),minSalary
+                    root.get("salary"),salary
             );
         }));
     }

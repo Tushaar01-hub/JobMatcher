@@ -1,0 +1,42 @@
+services:
+
+  postgres:
+    image: postgres:16
+    container_name: jobmatcher-postgres
+    environment:
+      POSTGRES_DB: jobmatcher
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123tushi
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    container_name: jobmatcher-redis
+    ports:
+      - "6379:6379"
+
+  backend:
+    build: .
+    container_name: jobmatcher-backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/jobmatcher
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 123tushi
+
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+
+      JWT_SECRET: ${JWT_SECRET}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+
+volumes:
+  postgres_data:
