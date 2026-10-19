@@ -395,21 +395,27 @@ http://localhost:8080
 
 ---
 
-## Future Improvements
+## Testing
 
-- OAuth2 / social authentication
-- React-based frontend
-- Database indexing and query optimization
-- Keyset pagination for large datasets
-- More advanced job recommendation algorithms
-- Asynchronous/background processing for expensive operations
-- Rate limiting and circuit breaker patterns
-- Swagger / OpenAPI documentation
-- Comprehensive unit and integration test coverage
-- Docker and cloud deployment
-- Monitoring and audit logging
-- Exploring semantic/vector-based job and skill matching
+- JUnit 5 + Mockito unit tests
+- Service-layer tests for user registration
+- Matching-engine tests covering match calculation and ranking
+- `mvn clean test` passes successfully
 
+## API Documentation
+
+- Swagger/OpenAPI documentation
+- JWT Bearer authentication supported through Swagger UI
+
+## Docker
+
+The application is Dockerized using Docker Compose with:
+
+- Spring Boot backend
+- PostgreSQL
+- Redis
+
+The services communicate through the Docker Compose network.
 ---
 
 ## Author
