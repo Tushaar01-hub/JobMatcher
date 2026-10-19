@@ -1,6 +1,7 @@
 package com.jobMatcher.project.service;
 
 import com.jobMatcher.project.dtos.*;
+import com.jobMatcher.project.enums.AuthProvider;
 import com.jobMatcher.project.enums.Role;
 import com.jobMatcher.project.exception.DuplicateResourceException;
 import com.jobMatcher.project.exception.ResourceNotFoundException;
@@ -138,6 +139,8 @@ public class UserService {
         newUser.setPassword(encodedPass);
         newUser.setEmail(registerRequestDTO.getEmail());
         newUser.setRole(Role.USER);
+        newUser.setProvider(AuthProvider.LOCAL);
+        newUser.setProviderSubject(null);
         User savedUser=userRepository.save(newUser);
         RegisterResponseDTO registerResponseDTO=modelMapper.map(savedUser, RegisterResponseDTO.class);
         return registerResponseDTO;

@@ -1,5 +1,6 @@
 package com.jobMatcher.project.entity;
 
+import com.jobMatcher.project.enums.AuthProvider;
 import com.jobMatcher.project.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -21,9 +22,13 @@ public class User {
     private String name;
     @Column(unique = true)
     private String email;
+    @Column(nullable = true)
     private String password;
     @Enumerated(EnumType.STRING)
     private Role role;
+    @Enumerated(EnumType.STRING)
+    private AuthProvider provider;
+    private String providerSubject;
 
     @OneToMany(mappedBy = "user")
     private List<UserSkill> userSkills=new ArrayList<>();

@@ -1,5 +1,7 @@
 package com.jobMatcher.project.configuration;
 
+import com.jobMatcher.project.security.CustomOAuth2SuccessHandler;
+import com.jobMatcher.project.security.CustomOidcUserService;
 import com.jobMatcher.project.security.CustomerUserDetails;
 import com.jobMatcher.project.security.CustomerUserDetailsService;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,19 +33,40 @@ import java.util.Base64;
 
 @Configuration
 public class SecurityConfig {
+    private final CustomOidcUserService customOidcUserService;
+    private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
+
+    public SecurityConfig(CustomOidcUserService customOidcUserService, CustomOAuth2SuccessHandler customOAuth2SuccessHandler) {
+        this.customOidcUserService = customOidcUserService;
+        this.customOAuth2SuccessHandler = customOAuth2SuccessHandler;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity){
         httpSecurity.csrf(csrf->csrf.disable())
                 .sessionManagement(session->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
 //                .formLogin(Customizer.withDefaults())
 //                .httpBasic(Customizer.withDefaults())
                 .authorizeHttpRequests(auth->
-                auth.requestMatchers("/auth/login","/auth/register").permitAll()
+                auth.requestMatchers(
+                                "/auth/login",
+                                "/auth/register",
+                                "/oauth2/**",
+                                "/login/**",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**"
+                        ).permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
+                .oauth2Login(oauth2 ->
+                oauth2.userInfoEndpoint(userInfo ->
+                        userInfo.oidcUserService(customOidcUserService)
+
+                )
+                        .successHandler(customOAuth2SuccessHandler)
+        )
                 .oauth2ResourceServer(oauth2->oauth2.jwt(
                         jwt->jwt.jwtAuthenticationConverter(
                                 jwtAuthenticationConverter()
@@ -73,29 +96,7 @@ public class SecurityConfig {
 
         return provider;
     }
-    @Bean
-    public SecretKey secretKey(@Value("${jwt.secret}") String secret){
-        byte[] decodedKey= Base64.getDecoder().decode(secret);
-        return new SecretKeySpec(
-                decodedKey,
-                "HmacSHA256"
-        );
-    }
-    @Bean
-    public JwtEncoder jwtEncoder(SecretKey secretKey){
-        return NimbusJwtEncoder.
-                withSecretKey(secretKey)
-                .algorithm(MacAlgorithm.HS256)
-                .build();
-    }
-    @Bean
-    public JwtDecoder jwtDecoder(SecretKey secretKey){
-        NimbusJwtDecoder decoder=
-                NimbusJwtDecoder.withSecretKey(secretKey)
-                        .macAlgorithm(MacAlgorithm.HS256)
-                        .build();
-        return decoder;
-    }
+
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter(){
         JwtGrantedAuthoritiesConverter authoritiesConverter=new JwtGrantedAuthoritiesConverter();
