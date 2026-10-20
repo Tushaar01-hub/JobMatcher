@@ -7,6 +7,7 @@ import java.util.List;
 
 @Data
 public class JobUpdatedResponseDTO {
+    private long id;
     private String title;
     private String description;
     private String company;

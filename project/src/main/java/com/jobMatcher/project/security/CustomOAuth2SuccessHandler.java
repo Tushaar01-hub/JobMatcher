@@ -15,17 +15,21 @@ import org.springframework.stereotype.Component;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import org.springframework.beans.factory.annotation.Value;
 
 @Component
 public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
+    private final String frontendBaseUrl;
 
-    public CustomOAuth2SuccessHandler(JwtService jwtService, UserRepository userRepository, ObjectMapper objectMapper) {
+    public CustomOAuth2SuccessHandler(JwtService jwtService, UserRepository userRepository, ObjectMapper objectMapper,
+                                     @Value("${app.frontend.url:http://localhost:5173}") String frontendBaseUrl) {
         this.jwtService = jwtService;
         this.userRepository = userRepository;
         this.objectMapper = objectMapper;
+        this.frontendBaseUrl = frontendBaseUrl;
     }
 
     @Override
@@ -49,11 +53,8 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
                 );
         String token=jwtService.generateToken(ourAuthentication);
 
-        response.setContentType("application/json");
-        response.getWriter().write(
-                objectMapper.writeValueAsString(
-                        new UserLoginResponseDTO(token)
-                )
-        );
+        // Redirect frontend with token in query string
+        String redirectUrl = frontendBaseUrl + "/auth/callback?token=" + token;
+        response.sendRedirect(redirectUrl);
     }
 }
