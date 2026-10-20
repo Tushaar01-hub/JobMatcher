@@ -1,6 +1,5 @@
 package com.jobMatcher.project.security;
 
-import org.modelmapper.internal.bytebuddy.agent.builder.AgentBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -34,8 +33,19 @@ public class JwtService {
                 .expiresAt(now.plusSeconds(expiry))
                 .subject(authentication.getName())
                 .claim("authorities",authorities)
+                .claim("userId", extractUserId(authentication))
                 .build();
         Jwt jwt=jwtEncoder.encode(JwtEncoderParameters.from(claims));
         return jwt.getTokenValue();
+    }
+
+    private long extractUserId(Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof CustomerUserDetails) {
+            return ((CustomerUserDetails) principal).getUserId();
+        }
+        throw new IllegalStateException(
+                "Unsupported authentication principal type: " + principal.getClass().getName()
+        );
     }
 }

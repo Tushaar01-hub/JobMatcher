@@ -202,6 +202,7 @@ public class JobService {
             dto.setSalary(job.getSalary());
             dto.setCompany(job.getCompany());
             dto.setExperienceLevel(job.getExperienceLevel());
+            dto.setId(job.getId());
             List<JobSkill> skills =
                     skillsByJobId.getOrDefault(
                             job.getId(),

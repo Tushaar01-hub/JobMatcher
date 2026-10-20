@@ -12,4 +12,5 @@ public interface UserSkillRepository extends JpaRepository<UserSkill,Long> {
 
     List<UserSkill> findAllByUserId(long userId);
     UserSkill findByUserIdAndSkillId(long userId,long skillId);
+    boolean existsBySkillId(long skillId);
 }

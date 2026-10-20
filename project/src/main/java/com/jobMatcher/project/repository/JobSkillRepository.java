@@ -22,4 +22,5 @@ public interface JobSkillRepository extends JpaRepository<JobSkill,Long> {
        WHERE js.job.id IN :jobIds
        """)
 List<JobSkill> findAllByJobIdIn(@Param("jobIds") List<Long> jobIds);
+    boolean existsBySkillId(long skillId);
 }

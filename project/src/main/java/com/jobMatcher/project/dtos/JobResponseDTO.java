@@ -16,6 +16,7 @@ import java.util.List;
 
 @Data
 public class JobResponseDTO {
+    private long id;
     private String title;
     private String description;
     private String company;

@@ -33,6 +33,10 @@ public class CustomerUserDetails implements UserDetails {
         return user.getEmail();
     }
 
+    public long getUserId() {
+        return user.getId();
+    }
+
     @Override
     public boolean isEnabled() {
         return true;

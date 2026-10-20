@@ -11,15 +11,27 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.jobMatcher.project.exception.ResourceConflictException;
+import com.jobMatcher.project.repository.UserSkillRepository;
+import com.jobMatcher.project.repository.JobSkillRepository;
 
 @Service
 public class SkillService {
     SkillRepository skillRepository;
     ModelMapper modelMapper;
+    UserSkillRepository userSkillRepository;
+    JobSkillRepository jobSkillRepository;
 
-    public SkillService(SkillRepository skillRepository, ModelMapper modelMapper) {
+    public SkillService(
+            SkillRepository skillRepository,
+            ModelMapper modelMapper,
+            UserSkillRepository userSkillRepository,
+            JobSkillRepository jobSkillRepository) {
+
         this.skillRepository = skillRepository;
         this.modelMapper = modelMapper;
+        this.userSkillRepository = userSkillRepository;
+        this.jobSkillRepository = jobSkillRepository;
     }
 
     //    1. createSkill()
@@ -68,10 +80,24 @@ public class SkillService {
 
     }
 //5. deleteSkill()
-    public void deleteSkill(long id){
-        if(!skillRepository.existsById(id)){
-            throw new ResourceNotFoundException("Skill Not Found");
-        }
-        skillRepository.deleteById(id);
+public void deleteSkill(long id) {
+
+    if (!skillRepository.existsById(id)) {
+        throw new ResourceNotFoundException("Skill Not Found");
     }
+
+    if (userSkillRepository.existsBySkillId(id)) {
+        throw new ResourceConflictException(
+                "Cannot delete skill because it is assigned to users"
+        );
+    }
+
+    if (jobSkillRepository.existsBySkillId(id)) {
+        throw new ResourceConflictException(
+                "Cannot delete skill because it is assigned to jobs"
+        );
+    }
+
+    skillRepository.deleteById(id);
+}
 }
