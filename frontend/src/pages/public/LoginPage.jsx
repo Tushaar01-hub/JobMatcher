@@ -29,8 +29,18 @@ const LoginPage = () => {
       addToast('Login successful!', 'success')
       navigate('/dashboard')
     } catch (err) {
-      setError(err.response?.data || 'Login failed. Please check your credentials.')
-      addToast(err.response?.data || 'Login failed', 'error')
+      const errorData = err.response?.data
+
+      const errorMessage =
+          typeof errorData === 'string'
+              ? errorData
+              : errorData?.message ||
+              errorData?.error ||
+              Object.values(errorData || {})[0] ||
+              'Login failed. Please check your credentials.'
+
+      setError(errorMessage)
+      addToast(errorMessage, 'error')
     } finally {
       setIsLoading(false)
     }
