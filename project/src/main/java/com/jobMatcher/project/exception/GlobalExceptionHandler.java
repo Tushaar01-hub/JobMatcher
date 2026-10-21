@@ -6,7 +6,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,6 +43,22 @@ public class GlobalExceptionHandler {
                 ex.getMessage(),
                 HttpStatus.CONFLICT
         );
+    }
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<String> handleAuthenticationException(
+            InvalidCredentialsException ex) {
+
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ex.getMessage());
+    }
+    @ExceptionHandler(UserNotRegisteredException.class)
+    public ResponseEntity<String> handleUserNotRegisteredException(
+            UserNotRegisteredException ex) {
+
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ex.getMessage());
     }
 
 }

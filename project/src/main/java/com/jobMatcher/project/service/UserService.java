@@ -145,4 +145,7 @@ public class UserService {
         RegisterResponseDTO registerResponseDTO=modelMapper.map(savedUser, RegisterResponseDTO.class);
         return registerResponseDTO;
     }
+    public boolean existsByEmail(String email) {
+        return userRepository.findByEmail(email).isPresent();
+    }
 }
