@@ -34,6 +34,18 @@ const AuthProvider = ({ children }) => {
   const login = (newToken) => {
     localStorage.setItem(TOKEN_KEY, newToken)
     setToken(newToken)
+
+    try {
+      const decoded = jwtDecode(newToken)
+
+      setUser({
+        email: decoded.sub,
+        userId: decoded.userId,
+        role: decoded.authorities[0].replace('ROLE_', ''),
+      })
+    } catch (error) {
+      console.error('Invalid token', error)
+    }
   }
 
   const logout = () => {
