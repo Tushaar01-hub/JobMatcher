@@ -32,8 +32,18 @@ const SkillsPage = () => {
         setUserSkills(userSkillsResponse.data)
         setAllSkills(allSkillsResponse.data)
       } catch (err) {
-        setError(err.response?.data || 'Failed to load skills')
-        addToast('Failed to load skills', 'error')
+        const data = err.response?.data
+
+        const message =
+            typeof data === 'string'
+                ? data
+                : data?.message ||
+                data?.error ||
+                Object.values(data || {})[0] ||
+                'Failed to load skills'
+
+        setError(message)
+        addToast(message, 'error')
       } finally {
         setIsLoading(false)
       }
@@ -51,8 +61,18 @@ const SkillsPage = () => {
       await userApi.removeSkillFromUser(user.userId, skillId)
       setUserSkills(userSkills.filter((skill) => skill.skillId !== skillId))
       addToast('Skill removed successfully', 'success')
-    } catch (err) {
-      addToast(err.response?.data || 'Failed to remove skill', 'error')
+    }  catch (err) {
+      const data = err.response?.data
+
+      const message =
+          typeof data === 'string'
+              ? data
+              : data?.message ||
+              data?.error ||
+              Object.values(data || {})[0] ||
+              'Failed to remove skill'
+
+      addToast(message, 'error')
     }
   }
 
@@ -67,7 +87,17 @@ const SkillsPage = () => {
       }])
       addToast('Skill added successfully', 'success')
     } catch (err) {
-      addToast(err.response?.data || 'Failed to add skill', 'error')
+      const data = err.response?.data
+
+      const message =
+          typeof data === 'string'
+              ? data
+              : data?.message ||
+              data?.error ||
+              Object.values(data || {})[0] ||
+              'Failed to add skill'
+
+      addToast(message, 'error')
     }
   }
 

@@ -24,8 +24,18 @@ const JobDetailsPage = () => {
         const response = await jobApi.getJobById(id)
         setJob(response.data)
       } catch (err) {
-        setError(err.response?.data || 'Failed to load job details')
-        addToast(err.response?.data || 'Failed to load job details', 'error')
+        const data = err.response?.data
+
+        const message =
+            typeof data === 'string'
+                ? data
+                : data?.message ||
+                data?.error ||
+                Object.values(data || {})[0] ||
+                'Failed to load job details'
+
+        setError(message)
+        addToast(message, 'error')
       } finally {
         setIsLoading(false)
       }

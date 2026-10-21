@@ -24,8 +24,18 @@ const MatchesPage = () => {
         const response = await matchApi.getUserMatches(user.userId)
         setMatches(response.data)
       } catch (err) {
-        setError(err.response?.data || 'Failed to load matches')
-        addToast(err.response?.data || 'Failed to load matches', 'error')
+        const data = err.response?.data
+
+        const message =
+            typeof data === 'string'
+                ? data
+                : data?.message ||
+                data?.error ||
+                Object.values(data || {})[0] ||
+                'Failed to load matches'
+
+        setError(message)
+        addToast(message, 'error')
       } finally {
         setIsLoading(false)
       }

@@ -41,8 +41,18 @@ const AdminJobsPage = () => {
       setJobs(jobsResponse.data)
       setSkills(skillsResponse.data)
     } catch (err) {
-      setError(err.response?.data || 'Failed to load jobs')
-      addToast('Failed to load jobs', 'error')
+      const data = err.response?.data
+
+      const message =
+          typeof data === 'string'
+              ? data
+              : data?.message ||
+              data?.error ||
+              Object.values(data || {})[0] ||
+              'Failed to load jobs'
+
+      setError(message)
+      addToast(message, 'error')
     } finally {
       setIsLoading(false)
     }

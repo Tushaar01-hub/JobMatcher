@@ -27,7 +27,18 @@ const JobsPage = () => {
         const response = await skillApi.getAllSkills()
         setSkills(response.data)
       } catch (err) {
-        addToast('Failed to load skills', 'error')
+        const data = err.response?.data
+
+        const message =
+            typeof data === 'string'
+                ? data
+                : data?.message ||
+                data?.error ||
+                Object.values(data || {})[0] ||
+                'Failed to load jobs'
+
+        setError(message)
+        addToast(message, 'error')
       }
     }
 

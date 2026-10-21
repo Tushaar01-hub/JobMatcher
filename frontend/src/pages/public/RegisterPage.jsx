@@ -28,14 +28,19 @@ const RegisterPage = () => {
       addToast('Registration successful! Please log in.', 'success')
       navigate('/login')
     } catch (err) {
-      setError(err.response?.data || 'Registration failed. Please try again.')
-      addToast(
-          typeof err.response?.data === 'string'
-              ? err.response.data
-              : 'Registration failed. Please check your input.',
-          'error'
-      )
-    } finally {
+      const data = err.response?.data
+
+      const message =
+          typeof data === 'string'
+              ? data
+              : data?.message ||
+              data?.error ||
+              Object.values(data || {})[0] ||
+              'Registration failed. Please check your input.'
+
+      setError(message)
+      addToast(message, 'error')
+    }finally {
       setIsLoading(false)
     }
   }

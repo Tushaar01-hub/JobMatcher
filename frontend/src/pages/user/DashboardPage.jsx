@@ -36,9 +36,19 @@ const DashboardPage = () => {
 
         setTopMatches(matchesResponse.data.slice(0, 3))
       } catch (err) {
-        setError(err.response?.data || 'Failed to load dashboard data')
-        addToast(err.response?.data || 'Failed to load dashboard data', 'error')
-      } finally {
+        const data = err.response?.data
+
+        const message =
+            typeof data === 'string'
+                ? data
+                : data?.message ||
+                data?.error ||
+                Object.values(data || {})[0] ||
+                'Failed to load dashboard data'
+
+        setError(message)
+        addToast(message, 'error')
+      }finally {
         setIsLoading(false)
       }
     }

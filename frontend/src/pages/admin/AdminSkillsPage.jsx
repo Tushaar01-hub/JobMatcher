@@ -30,11 +30,26 @@ const AdminSkillsPage = () => {
       const response = await skillApi.getAllSkills()
       setSkills(response.data)
     } catch (err) {
-      setError(err.response?.data || 'Failed to load skills')
-      addToast('Failed to load skills', 'error')
+      const message = getErrorMessage(err, 'Failed to load skills')
+      setError(message)
+      addToast(message, 'error')
     } finally {
       setIsLoading(false)
     }
+  }
+  const getErrorMessage = (err, fallback) => {
+    const data = err.response?.data
+
+    if (typeof data === 'string') {
+      return data
+    }
+
+    return (
+        data?.message ||
+        data?.error ||
+        Object.values(data || {})[0] ||
+        fallback
+    )
   }
 
   const handleDelete = async (id) => {
@@ -45,9 +60,7 @@ const AdminSkillsPage = () => {
       addToast('Skill deleted successfully', 'success')
     } catch (err) {
       addToast(
-          typeof err.response?.data === 'string'
-              ? err.response.data
-              : err.response?.data?.error || 'Failed to delete skill',
+          getErrorMessage(err, 'Failed to delete skill'),
           'error'
       )
     }
@@ -77,7 +90,10 @@ const AdminSkillsPage = () => {
       setIsModalOpen(false)
       fetchSkills()
     } catch (err) {
-      addToast(err.response?.data || 'Failed to save skill', 'error')
+      addToast(
+          getErrorMessage(err, 'Failed to save skill'),
+          'error'
+      )
     }
   }
 

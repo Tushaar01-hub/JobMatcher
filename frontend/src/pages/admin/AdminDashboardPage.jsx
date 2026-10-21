@@ -30,8 +30,18 @@ const AdminDashboardPage = () => {
           totalUsers: usersResponse.data.length,
         })
       } catch (err) {
-        setError(err.response?.data || 'Failed to load admin dashboard data')
-        addToast(err.response?.data || 'Failed to load admin dashboard data', 'error')
+        const data = err.response?.data
+
+        const message =
+            typeof data === 'string'
+                ? data
+                : data?.message ||
+                data?.error ||
+                Object.values(data || {})[0] ||
+                'Failed to load admin dashboard data'
+
+        setError(message)
+        addToast(message, 'error')
       } finally {
         setIsLoading(false)
       }

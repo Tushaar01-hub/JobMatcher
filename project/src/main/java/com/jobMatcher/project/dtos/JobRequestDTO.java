@@ -27,6 +27,6 @@ public class JobRequestDTO {
     private Integer salary;
     @NotNull(message = "Experience is required") //an enum can have only 1 defined values
     private ExperienceLevel experienceLevel;
-    @NotEmpty
+    @NotEmpty(message="skill must not be empty")
     private List<Long> skillIds;
 }

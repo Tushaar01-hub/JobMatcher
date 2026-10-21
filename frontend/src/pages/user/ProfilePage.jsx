@@ -23,8 +23,18 @@ const ProfilePage = () => {
         const response = await userApi.getUserProfile(user.userId)
         setProfile(response.data)
       } catch (err) {
-        setError(err.response?.data || 'Failed to load profile')
-        addToast(err.response?.data || 'Failed to load profile', 'error')
+        const data = err.response?.data
+
+        const message =
+            typeof data === 'string'
+                ? data
+                : data?.message ||
+                data?.error ||
+                Object.values(data || {})[0] ||
+                'Failed to load profile'
+
+        setError(message)
+        addToast(message, 'error')
       } finally {
         setIsLoading(false)
       }
