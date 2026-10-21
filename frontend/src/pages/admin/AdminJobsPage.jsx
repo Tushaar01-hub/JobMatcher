@@ -108,7 +108,17 @@ const AdminJobsPage = () => {
       setIsModalOpen(false)
       fetchData()
     } catch (err) {
-      addToast(err.response?.data || 'Failed to save job', 'error')
+      const data = err.response?.data
+
+      const message =
+          typeof data === 'string'
+              ? data
+              : data?.message ||
+              data?.error ||
+              Object.values(data || {})[0] ||
+              'Failed to save job'
+
+      addToast(message, 'error')
     }
   }
 
