@@ -11,6 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import com.jobMatcher.project.exception.InvalidCredentialsException;
 import org.springframework.stereotype.Service;
+import org.springframework.security.authentication.BadCredentialsException;
 
 @Service
 public class AuthService {
@@ -30,10 +31,13 @@ public class AuthService {
     }
 
     public RegisterResponseDTO register(RegisterRequestDTO request) {
+        request.setEmail(request.getEmail().trim().toLowerCase());
         return userService.registerUser(request);
     }
 
     public UserLoginResponseDTO login(UserLoginRequestDTO request) {
+        String email = request.getEmail().trim().toLowerCase();
+        request.setEmail(email);
         if (!userService.existsByEmail(request.getEmail())) {
             throw new UserNotRegisteredException("User isn't registered");
         }
@@ -50,7 +54,7 @@ public class AuthService {
 
             return new UserLoginResponseDTO(token);
 
-        } catch (InvalidCredentialsException e) {
+        } catch (BadCredentialsException e) {
             throw new InvalidCredentialsException(
                     "Invalid credentials"
             );
